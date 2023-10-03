@@ -33,9 +33,7 @@ function Bottombar() {
                 width={24}
                 height={24}
               />
-              <p className="text-subtle-medium  max-sm:hidden">
-                {link.label.split(/\s+/)[0]}
-              </p>
+              <p className="text-subtle-medium  max-sm:hidden">{link.label}</p>
             </Link>
           );
         })}

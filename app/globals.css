@@ -5,7 +5,7 @@
 @layer components {
   /* main */
   .main-container {
-    @apply flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 max-md:pb-32 sm:px-10;
+    @apply flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10;
   }
 
   /* Head Text */
@@ -59,7 +59,7 @@
   }
 
   .topbar {
-    @apply fixed top-0 z-30 flex w-full items-center justify-between bg-white px-6 py-3  shadow-neutral-500 drop-shadow-lg;
+    @apply fixed top-0 z-30 flex w-full items-center justify-between bg-white px-6 py-3  shadow-neutral-500 drop-shadow-lg md:hidden;
   }
 
   .bottombar {
@@ -75,11 +75,11 @@
   }
 
   .leftsidebar {
-    @apply sticky left-0 top-0 z-20 flex h-screen w-fit flex-col justify-between overflow-auto  bg-white pb-5 pt-28 max-md:hidden shadow-neutral-500 drop-shadow-lg;
+    @apply sticky left-0 top-0 z-20 flex h-screen w-fit flex-col justify-between overflow-auto  bg-white pb-5 pt-5 max-md:hidden shadow-neutral-500 drop-shadow-lg;
   }
 
   .leftsidebar_link {
-    @apply relative flex justify-start gap-4 rounded-lg p-4 hover:bg-neutral-100;
+    @apply relative flex justify-start gap-4 rounded-lg p-4 hover:bg-neutral-100 max-lg:justify-center max-md:px-0;
   }
 
   .pagination {
