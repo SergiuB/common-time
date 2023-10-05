@@ -7,7 +7,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Plus } from "lucide-react";
-import { Share } from "next/font/google";
 
 const Page = async () => {
   return (
