@@ -7,6 +7,7 @@ import * as z from "zod";
 import { EventTypeValidation } from "@/lib/validations/event-type";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
+import { Check } from "lucide-react";
 
 import {
   Form,
@@ -27,6 +28,8 @@ import {
 import { formatMinutes, minutesFromString } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { createEventType } from "@/lib/actions/event-type.actions";
+import { colorVariants, eventColors } from "@/constants";
+import colors from "tailwindcss/colors";
 
 type Action = "create" | "update";
 
@@ -258,7 +261,41 @@ const EventTypeForm = ({
           )}
         />
 
-        <div className="col-span-3"></div>
+        <FormField
+          control={form.control}
+          name="color"
+          render={({ field }) => (
+            <FormItem className="col-span-4">
+              <FormLabel className="text-small-semibold">Color</FormLabel>
+              <div className="flex flex-wrap gap-2 pb-4 hover">
+                {eventColors.map((color, index) => (
+                  <div
+                    className="relative w-9 h-9 rounded-full text-center group cursor-pointer"
+                    key={index}
+                    style={{ backgroundColor: colorVariants[color] }}
+                    onClick={() => field.onChange(index)}
+                  >
+                    {field.value === index && (
+                      <Check className="text-white text-center h-8 w-8 pl-0.5 pt-1" />
+                    )}
+                    {field.value !== index ? (
+                      <p className="relative top-8 text-subtle hidden group-hover:inline">
+                        {color}
+                      </p>
+                    ) : (
+                      <p className="relative text-subtle hidden group-hover:inline">
+                        {color}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="col-start-3"></div>
         <Button type="submit" className="gap">
           {action === "create" ? "Create" : "Save"}
         </Button>
@@ -268,3 +305,29 @@ const EventTypeForm = ({
 };
 
 export default EventTypeForm;
+
+{
+  /* <Select
+onValueChange={field.onChange}
+defaultValue={eventColors[field.value]}
+onValueChange={(e) =>
+  field.onChange(parseInt(e.target.value, 10))
+}
+>
+<FormControl>
+  <SelectTrigger className="form-input">
+    <SelectValue placeholder="Select a color" />
+  </SelectTrigger>
+</FormControl>
+<SelectContent>
+  {eventColors.map((color) => (
+    <SelectItem value={color} key={color}>
+      <div
+        className="w-4 h-4 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+    </SelectItem>
+  ))}
+</SelectContent>
+</Select> */
+}

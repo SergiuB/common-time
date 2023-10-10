@@ -165,6 +165,13 @@ module.exports = {
           fontWeight: "500",
         },
       ],
+      subtle: [
+        "12px",
+        {
+          lineHeight: "16px",
+          fontWeight: "400",
+        },
+      ],
       "subtle-semibold": [
         "12px",
         {

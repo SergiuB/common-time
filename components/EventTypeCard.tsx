@@ -17,7 +17,7 @@ import {
   TooltipContent,
 } from "./ui/tooltip";
 import { formatMinutes } from "@/lib/utils";
-import { eventColors } from "@/constants";
+import { colorVariants, eventColors } from "@/constants";
 
 interface Props {
   name: string;
@@ -33,10 +33,12 @@ interface Props {
 }
 
 const EventTypeCard = ({ name, durationMin, link, color }: Props) => {
+  console.log(color, colorVariants[color]);
   return (
     <Card className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg">
       <div
-        className={`bg-${eventColors[color]}-500 w-full h-1 rounded-t-lg`}
+        style={{ backgroundColor: colorVariants[eventColors[color]] }}
+        className="w-full h-1 rounded-t-lg"
       ></div>
       <CardHeader>
         <CardTitle>{name}</CardTitle>
