@@ -24,3 +24,23 @@ export const generateSidebarLinks = ({ userId }: Props) => [
     label: "Profile",
   },
 ];
+
+export const eventColors = [
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+];

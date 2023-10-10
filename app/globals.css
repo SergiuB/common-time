@@ -5,7 +5,11 @@
 @layer components {
   /* main */
   .main-container {
-    @apply flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10;
+    @apply relative flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10;
+  }
+
+  .main-container_top-bar {
+    @apply absolute top-0 left-0 right-0 flex items-center bg-white p-4 border-b;
   }
 
   /* Head Text */
@@ -59,7 +63,7 @@
   }
 
   .topbar {
-    @apply fixed top-0 z-30 flex w-full items-center justify-between bg-white px-6 py-3  shadow-neutral-500 drop-shadow-lg md:hidden;
+    @apply absolute top-0 z-30 flex w-full items-center justify-between bg-white px-6 py-3  shadow-neutral-500 drop-shadow-lg md:hidden;
   }
 
   .bottombar {
@@ -147,8 +151,8 @@
   @apply cursor-pointer border-none bg-transparent outline-none file:text-primary-500 !important;
 }
 
-.account-form_input {
-  @apply border border-gray-800 bg-gray-800 !important;
+.form-input {
+  @apply bg-white no-focus !important;
 }
 
 /* Comment Form */

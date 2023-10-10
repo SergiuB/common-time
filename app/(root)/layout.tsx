@@ -12,7 +12,7 @@ import Topbar from "@/components/Topbar";
 import Bottombar from "@/components/Bottombar";
 import LeftSidebar from "@/components/LeftSidebar";
 import { redirect } from "next/navigation";
-import { updateUser } from "@/lib/actions/user.actions";
+import { createUserIfNotExists } from "@/lib/actions/user.actions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +27,7 @@ const Layout = async ({ children }: React.PropsWithChildren) => {
   if (!user) return redirect("/sign-in");
 
   // Create the user in the database if they don't exist
-  const userInfo = await updateUser({
+  await createUserIfNotExists({
     authId: user.id,
   });
 

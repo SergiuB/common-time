@@ -3,7 +3,8 @@ import { User } from "./types";
 
 const userSchema = new mongoose.Schema<User>({
   authId: { type: String, required: true, unique: true },
-  eventTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Thread" }],
+  eventTypes: [{ type: mongoose.Schema.Types.ObjectId, ref: "EventType" }],
+  schedules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Schedule" }],
 });
 
 const User =

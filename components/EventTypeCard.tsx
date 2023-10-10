@@ -16,13 +16,31 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "./ui/tooltip";
+import { formatMinutes } from "@/lib/utils";
+import { eventColors } from "@/constants";
 
-const EventTypeCard = () => {
+interface Props {
+  name: string;
+  durationMin: number;
+  location: string;
+  description: string;
+  scheduleId: string;
+  link: string;
+  color: number;
+  dateRangeDays: number;
+  beforeEventMin: number;
+  afterEventMin: number;
+}
+
+const EventTypeCard = ({ name, durationMin, link, color }: Props) => {
   return (
-    <Card className="w-[350px] cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg">
+    <Card className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg">
+      <div
+        className={`bg-${eventColors[color]}-500 w-full h-1 rounded-t-lg`}
+      ></div>
       <CardHeader>
-        <CardTitle>90 minute massage / 200 lei / Sergiu</CardTitle>
-        <CardDescription>1 hr 30 mins, One-on-One</CardDescription>
+        <CardTitle>{name}</CardTitle>
+        <CardDescription>{formatMinutes(durationMin)}</CardDescription>
       </CardHeader>
       <CardContent>
         <Link
@@ -49,7 +67,7 @@ const EventTypeCard = () => {
                 <p>Duplicate</p>
               </TooltipContent>
             </Tooltip>
-            <Tooltip>
+            {/* <Tooltip> // TODO: Add share functionality
               <TooltipTrigger asChild>
                 <Button variant="outline" size="icon">
                   <Share className="h-4 w-4" />
@@ -58,7 +76,7 @@ const EventTypeCard = () => {
               <TooltipContent>
                 <p>Share</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="destructive" size="icon">
