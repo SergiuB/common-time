@@ -20,7 +20,11 @@ import {
 } from "./ui/tooltip";
 import { formatMinutes } from "@/lib/utils";
 import { colorVariants, eventColors } from "@/constants";
-import { deleteEventType } from "@/lib/actions/user.actions";
+import {
+  deleteEventType,
+  duplicateEventType,
+} from "@/lib/actions/user.actions";
+import { useRouter } from "next/navigation";
 
 interface Props {
   authId: string;
@@ -45,9 +49,16 @@ const EventTypeCard = ({
   link,
   color,
 }: Props) => {
-  console.log(color, colorVariants[color]);
+  const router = useRouter();
+  const editEventType = () => {
+    console.log("editEventType");
+    router.push(`/event-types/${id}`);
+  };
   return (
-    <Card className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg">
+    <Card
+      className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg"
+      onClick={editEventType}
+    >
       <div
         style={{ backgroundColor: colorVariants[eventColors[color]] }}
         className="w-full h-1 rounded-t-lg"
@@ -73,7 +84,14 @@ const EventTypeCard = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    duplicateEventType({ authId, eventId: id });
+                  }}
+                >
                   <Copy className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -96,7 +114,10 @@ const EventTypeCard = ({
                 <Button
                   variant="destructive"
                   size="icon"
-                  onClick={() => deleteEventType({ authId, eventId: id })}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteEventType({ authId, eventId: id });
+                  }}
                 >
                   <Trash className="h-4 w-4" />
                 </Button>

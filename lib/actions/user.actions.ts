@@ -80,7 +80,6 @@ export async function createEventType({
   afterEventMin,
 }: CreateOpts): Promise<void> {
   try {
-    console.log("creating event type");
     const user = await UserModel.findOne({ authId });
     if (!user) throw new Error("User not found");
     if (!user?.schedules?.[0]) throw new Error("User has no schedules");
@@ -107,7 +106,50 @@ export async function createEventType({
   }
 }
 
-interface DeleteOpts {
+interface UpdateOpts extends CreateOpts {
+  eventId: string;
+}
+
+export async function updateEventType({
+  authId,
+  eventId,
+  name,
+  durationMin,
+  location,
+  description,
+  link,
+  color,
+  dateRangeDays,
+  beforeEventMin,
+  afterEventMin,
+}: UpdateOpts): Promise<void> {
+  try {
+    const user = await UserModel.findOne({ authId });
+    if (!user) throw new Error("User not found");
+    if (!user?.schedules?.[0]) throw new Error("User has no schedules");
+
+    const eventType = user.eventTypes.id(eventId);
+    if (!eventType) throw new Error("Event type not found");
+
+    eventType.name = name;
+    eventType.durationMin = durationMin;
+    eventType.location = location;
+    eventType.description = description;
+    eventType.link = link;
+    eventType.color = color;
+    eventType.dateRangeDays = dateRangeDays;
+    eventType.beforeEventMin = beforeEventMin;
+    eventType.afterEventMin = afterEventMin;
+
+    await user.save();
+
+    revalidatePath("/event-types");
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+interface EventOpts {
   authId: string;
   eventId: string;
 }
@@ -115,17 +157,64 @@ interface DeleteOpts {
 export async function deleteEventType({
   authId,
   eventId,
-}: DeleteOpts): Promise<void> {
+}: EventOpts): Promise<void> {
   try {
-    console.log("deleting event type");
     const user = await UserModel.findOne({ authId });
     if (!user) throw new Error("User not found");
 
-    user.eventTypes.id(eventId).deleteOne();
+    const eventType = user.eventTypes.id(eventId);
+    if (!eventType) throw new Error("Event type not found");
+
+    eventType.deleteOne();
 
     await user.save();
 
     revalidatePath("/event-types");
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+export async function duplicateEventType({
+  authId,
+  eventId,
+}: EventOpts): Promise<void> {
+  try {
+    const user = await UserModel.findOne({ authId });
+    if (!user) throw new Error("User not found");
+
+    const srcEventType = user.eventTypes.id(eventId);
+    if (!srcEventType) throw new Error("Event type not found");
+
+    user.eventTypes.push({
+      name: srcEventType.name,
+      durationMin: srcEventType.durationMin,
+      location: srcEventType.location,
+      description: srcEventType.description,
+      link: srcEventType.link,
+      color: srcEventType.color,
+      dateRangeDays: srcEventType.dateRangeDays,
+      beforeEventMin: srcEventType.beforeEventMin,
+      afterEventMin: srcEventType.afterEventMin,
+      scheduleId: srcEventType.scheduleId,
+    });
+    await user.save();
+
+    revalidatePath("/event-types");
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+export async function fetchEventType({ authId, eventId }: EventOpts) {
+  try {
+    const user = await UserModel.findOne({ authId });
+    if (!user) throw new Error("User not found");
+
+    const srcEventType = user.eventTypes.id(eventId);
+    if (!srcEventType) throw new Error("Event type not found");
+
+    return srcEventType;
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }

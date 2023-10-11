@@ -54,10 +54,7 @@ const Page = async () => {
                 beforeEventMin,
                 afterEventMin,
               }) => (
-                <div
-                  className="animate-in fade-in duration-300"
-                  key={_id!.toString()}
-                >
+                <div key={_id!.toString()}>
                   <EventTypeCard
                     authId={user!.id}
                     id={_id!.toString()}

@@ -34,10 +34,12 @@ export interface EventType {
   afterEventMin: number;
 }
 
+interface EventTypeSubdoc extends EventType {
+  deleteOne: () => Promise<void>;
+}
+
 interface EventTypeCollection extends Array<EventType> {
-  id: (id: string) => {
-    deleteOne: () => Promise<void>;
-  };
+  id: (id: string) => EventTypeSubdoc | null;
 }
 
 export interface User {

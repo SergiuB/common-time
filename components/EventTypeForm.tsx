@@ -28,11 +28,12 @@ import {
 import { formatMinutes, minutesFromString } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
 import { colorVariants, eventColors } from "@/constants";
-import { createEventType } from "@/lib/actions/user.actions";
+import { createEventType, updateEventType } from "@/lib/actions/user.actions";
 
 type Action = "create" | "update";
 
 interface Props {
+  eventId?: string;
   name?: string;
   durationMin?: number;
   location?: string;
@@ -48,6 +49,7 @@ interface Props {
 
 const EventTypeForm = ({
   name,
+  eventId,
   durationMin,
   location,
   description,
@@ -83,9 +85,7 @@ const EventTypeForm = ({
   });
 
   const onSubmit = async (values: z.infer<typeof EventTypeValidation>) => {
-    console.log("submitting", values);
-    // TODO: create or update event type
-    await createEventType({
+    const opts = {
       authId: userId!,
       name: values.name,
       durationMin: minutesFromString(values.durationMin),
@@ -96,20 +96,26 @@ const EventTypeForm = ({
       dateRangeDays: values.dateRangeDays,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
-    });
-
+    };
+    if (action == "update") {
+      await updateEventType({
+        eventId: eventId!,
+        ...opts,
+      });
+    }
+    if (action == "create") {
+      await createEventType({
+        ...opts,
+      });
+    }
     router.push("/event-types");
-  };
-
-  const onInvalid = (...args: any[]) => {
-    console.log(args);
   };
 
   // absolute top-0 left-0 right-0 flex items-center bg-white p-4 border-b
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
+        onSubmit={form.handleSubmit(onSubmit)}
         className=" w-screen max-w-screen-md mt-20 grid grid-cols-4 gap-4"
       >
         <FormField
