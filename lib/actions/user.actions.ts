@@ -1,10 +1,9 @@
 "use server";
 
-import { User } from "../models/types";
+import { Color, EventType, Schedule, User } from "../models/types";
 import UserModel from "../models/user.model";
-import ScheduleModel from "../models/schedule.model";
-import EventTypeModel from "../models/event-type.model";
 import { connectToDb } from "../mongoose";
+import { revalidatePath } from "next/cache";
 
 export async function createUserIfNotExists({
   authId,
@@ -22,7 +21,7 @@ export async function createUserIfNotExists({
 
     // set default schedule if none exists
     if (user.schedules?.length === 0) {
-      const defaultSchedule = new ScheduleModel({
+      const defaultSchedule: Schedule = {
         name: "Working Hours",
         intervals: [
           { day: "Monday", startMin: 540, endMin: 1020 },
@@ -32,11 +31,9 @@ export async function createUserIfNotExists({
           { day: "Friday", startMin: 540, endMin: 1020 },
         ],
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      });
+      };
 
-      await defaultSchedule.save();
-
-      user.schedules = user.schedules || [];
+      // user.schedules = user.schedules || [];
       user.schedules.push(defaultSchedule);
 
       await user.save();
@@ -51,9 +48,84 @@ export async function fetchUser(authId: string): Promise<User | null> {
   try {
     await connectToDb();
 
-    return await UserModel.findOne({ authId })
-      .populate({ path: "eventTypes", model: EventTypeModel })
-      .populate({ path: "schedules", model: ScheduleModel });
+    return await UserModel.findOne({ authId });
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+interface CreateOpts {
+  authId: string;
+  name: string;
+  durationMin: number;
+  location: string;
+  description: string;
+  link: string;
+  color: Color;
+  dateRangeDays: number;
+  beforeEventMin: number;
+  afterEventMin: number;
+}
+
+export async function createEventType({
+  authId,
+  name,
+  durationMin,
+  location,
+  description,
+  link,
+  color,
+  dateRangeDays,
+  beforeEventMin,
+  afterEventMin,
+}: CreateOpts): Promise<void> {
+  try {
+    console.log("creating event type");
+    const user = await UserModel.findOne({ authId });
+    if (!user) throw new Error("User not found");
+    if (!user?.schedules?.[0]) throw new Error("User has no schedules");
+
+    const eventType: EventType = {
+      name,
+      durationMin,
+      location,
+      description,
+      link,
+      color,
+      dateRangeDays,
+      beforeEventMin,
+      afterEventMin,
+      scheduleId: user.schedules?.[0]._id!,
+    };
+
+    user.eventTypes.push(eventType);
+    await user.save();
+
+    revalidatePath("/event-types");
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+interface DeleteOpts {
+  authId: string;
+  eventId: string;
+}
+
+export async function deleteEventType({
+  authId,
+  eventId,
+}: DeleteOpts): Promise<void> {
+  try {
+    console.log("deleting event type");
+    const user = await UserModel.findOne({ authId });
+    if (!user) throw new Error("User not found");
+
+    user.eventTypes.id(eventId).deleteOne();
+
+    await user.save();
+
+    revalidatePath("/event-types");
   } catch (error: any) {
     throw new Error(`Failed to fetch user: ${error.message}`);
   }

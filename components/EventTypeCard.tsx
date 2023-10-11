@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { Share, Copy, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,8 +20,11 @@ import {
 } from "./ui/tooltip";
 import { formatMinutes } from "@/lib/utils";
 import { colorVariants, eventColors } from "@/constants";
+import { deleteEventType } from "@/lib/actions/user.actions";
 
 interface Props {
+  authId: string;
+  id: string;
   name: string;
   durationMin: number;
   location: string;
@@ -32,7 +37,14 @@ interface Props {
   afterEventMin: number;
 }
 
-const EventTypeCard = ({ name, durationMin, link, color }: Props) => {
+const EventTypeCard = ({
+  authId,
+  id,
+  name,
+  durationMin,
+  link,
+  color,
+}: Props) => {
   console.log(color, colorVariants[color]);
   return (
     <Card className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg">
@@ -81,7 +93,11 @@ const EventTypeCard = ({ name, durationMin, link, color }: Props) => {
             </Tooltip> */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="destructive" size="icon">
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  onClick={() => deleteEventType({ authId, eventId: id })}
+                >
                   <Trash className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>

@@ -47,7 +47,7 @@ const Page = async () => {
                 _id,
                 location,
                 description,
-                schedule,
+                scheduleId,
                 link,
                 color,
                 dateRangeDays,
@@ -56,14 +56,16 @@ const Page = async () => {
               }) => (
                 <div
                   className="animate-in fade-in duration-300"
-                  key={_id.toString()}
+                  key={_id!.toString()}
                 >
                   <EventTypeCard
+                    authId={user!.id}
+                    id={_id!.toString()}
                     name={name}
                     durationMin={durationMin}
                     location={location}
                     description={description}
-                    scheduleId={schedule._id.toString()}
+                    scheduleId={scheduleId.toString()}
                     link={link}
                     color={color}
                     dateRangeDays={dateRangeDays}

@@ -27,9 +27,8 @@ import {
 } from "@/components/ui/select";
 import { formatMinutes, minutesFromString } from "@/lib/utils";
 import { useAuth } from "@clerk/nextjs";
-import { createEventType } from "@/lib/actions/event-type.actions";
 import { colorVariants, eventColors } from "@/constants";
-import colors from "tailwindcss/colors";
+import { createEventType } from "@/lib/actions/user.actions";
 
 type Action = "create" | "update";
 

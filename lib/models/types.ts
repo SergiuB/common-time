@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
 
 export enum Color {
   Red,
@@ -21,13 +21,12 @@ export enum Color {
 }
 
 export interface EventType {
-  _id: mongoose.ObjectId;
+  _id?: mongoose.ObjectId;
   name: string;
-  createdAt: Date;
   durationMin: number;
   location: string;
   description: string;
-  schedule: Schedule;
+  scheduleId: mongoose.ObjectId;
   link: string;
   color: Color;
   dateRangeDays: number;
@@ -35,10 +34,16 @@ export interface EventType {
   afterEventMin: number;
 }
 
+interface EventTypeCollection extends Array<EventType> {
+  id: (id: string) => {
+    deleteOne: () => Promise<void>;
+  };
+}
+
 export interface User {
   _id: mongoose.ObjectId;
   authId: string;
-  eventTypes: EventType[];
+  eventTypes: EventTypeCollection;
   schedules: Schedule[];
 }
 
@@ -52,13 +57,14 @@ export type Day =
   | "Sunday";
 
 export interface Interval {
+  _id?: mongoose.ObjectId;
   day: Day;
   startMin: number;
   endMin: number;
 }
 
 export interface Schedule {
-  _id: mongoose.ObjectId;
+  _id?: mongoose.ObjectId;
   name: string;
   intervals: Interval[];
   timezone: string;
