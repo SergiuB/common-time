@@ -1,5 +1,5 @@
 import mongoose, { Model } from "mongoose";
-import { Schedule, Interval, EventType, User } from "./types";
+import { Schedule, Interval, EventType, User, CalendarTokens } from "./types";
 
 const intervalSchema = new mongoose.Schema<Interval>({
   day: { type: String, required: true },
@@ -29,10 +29,16 @@ const eventTypeSchema = new mongoose.Schema<EventType>({
   afterEventMin: { type: Number, required: true },
 });
 
+const calendarTokenSchema = new mongoose.Schema<CalendarTokens>({
+  accessToken: { type: String, required: true },
+  refreshToken: { type: String, required: true },
+});
+
 const userSchema = new mongoose.Schema<User>({
   authId: { type: String, required: true, unique: true },
   eventTypes: [eventTypeSchema],
   schedules: [scheduleSchema],
+  calendarTokens: { type: String },
 });
 
 const User =

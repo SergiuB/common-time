@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
-import { currentUser, useAuth } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs";
 
 import EventTypeForm from "@/components/EventTypeForm";
 import Link from "next/link";

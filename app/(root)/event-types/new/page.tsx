@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 import EventTypeForm from "@/components/EventTypeForm";
 import Link from "next/link";
@@ -10,8 +10,10 @@ const Page = () => {
       <div className="main-container_top-bar">
         <Button variant="outline" className="rounded-3xl">
           <Link href="/event-types">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            <div className="flex items-center">
+              <ChevronLeft className="mr-2 h-4 w-4" />
+              Back
+            </div>
           </Link>
         </Button>
         <h1 className="flex-1 text-center text-heading3 text-neutral-600 pr-20">

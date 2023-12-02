@@ -1,10 +1,10 @@
 import * as z from "zod";
 
 export const EventTypeValidation = z.object({
-  name: z.string().min(3).max(30),
+  name: z.string().max(30).nonempty(),
   durationMin: z.string().nonempty(),
-  location: z.string().min(3).max(200),
-  description: z.string().min(3).max(200),
+  location: z.string().max(200).nonempty(),
+  description: z.string().max(200).nonempty(),
   color: z.number().min(0).max(16),
   dateRangeDays: z.number().min(1).max(365),
   beforeEventMin: z.string().nonempty(),

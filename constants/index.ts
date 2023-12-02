@@ -68,3 +68,13 @@ export const colorVariants: {
   pink: colors.pink["500"],
   rose: colors.rose["500"],
 };
+
+export const days = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+] as const;

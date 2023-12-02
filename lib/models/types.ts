@@ -46,7 +46,9 @@ export interface User {
   _id: mongoose.ObjectId;
   authId: string;
   eventTypes: EventTypeCollection;
-  schedules: Schedule[];
+  schedules: ScheduleCollection;
+  // we serialize the token map due to Mongoose poor support for Maps
+  calendarTokens: string;
 }
 
 export type Day =
@@ -71,3 +73,17 @@ export interface Schedule {
   intervals: Interval[];
   timezone: string;
 }
+
+interface ScheduleSubdoc extends Schedule {
+  deleteOne: () => Promise<void>;
+}
+export interface ScheduleCollection extends Array<Schedule> {
+  id: (id: string) => ScheduleSubdoc | null;
+}
+
+export interface CalendarTokens {
+  accessToken: string;
+  refreshToken: string;
+}
+
+interface CalendarTokenMap extends Map<string, CalendarTokens> {}

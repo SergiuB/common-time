@@ -3,11 +3,10 @@
 import { generateSidebarLinks } from "@/constants";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 
 function Bottombar() {
-  const router = useRouter();
   const pathname = usePathname();
   const { userId } = useAuth();
   const sidebarLinks = generateSidebarLinks({ userId });
