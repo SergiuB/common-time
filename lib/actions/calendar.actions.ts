@@ -4,15 +4,7 @@ import { access } from "fs";
 import { getCalendarTokens } from "./user.actions";
 import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
-
-interface CalendarData {
-  id: string;
-  summary: string;
-  description: string;
-  timeZone: string;
-  backgroundColor: string;
-  foregroundColor: string;
-}
+import { CalendarData } from "../types";
 
 const fetchCalendarList = fetchWithToken(
   (accessToken: string) =>

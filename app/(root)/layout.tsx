@@ -23,13 +23,12 @@ export const metadata: Metadata = {
 };
 
 const Layout = async ({ children }: React.PropsWithChildren) => {
-  const user = await currentUser();
-  if (!user) return redirect("/sign-in");
-
   // Create the user in the database if they don't exist
-  await createUserIfNotExists({
-    authId: user.id,
-  });
+  try {
+    await createUserIfNotExists();
+  } catch (error) {
+    return redirect("/sign-in");
+  }
 
   return (
     <html lang="en">

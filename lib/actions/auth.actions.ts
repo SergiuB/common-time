@@ -2,10 +2,7 @@
 
 import { memoize } from "../utils";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { currentUser } from "@clerk/nextjs";
 import { storeCalendarTokens } from "./user.actions";
-
-let accesssTokenMap: Record<string, [string, string][]> = {};
 
 type TokenResponse =
   | {
@@ -44,17 +41,7 @@ export const storeTokensUsingAuthCode = memoize(
 
     const data = await response.json();
 
-    console.log(data, jwt.decode(data.id_token));
     const calendarEmail = (jwt.decode(data.id_token) as JwtPayload)?.email;
-
-    const user = await currentUser();
-
-    console.log("user", user!.id);
-
-    // // Store access token in memory
-    // accesssTokenMap[user!.id] = accesssTokenMap[user!.id] || [];
-    // accesssTokenMap[user!.id].push([calendarEmail, data.access_token]);
-    // console.log("accesssTokenMap", accesssTokenMap);
 
     await storeCalendarTokens({
       calendarEmail,
@@ -63,13 +50,6 @@ export const storeTokensUsingAuthCode = memoize(
     });
   },
 );
-
-export const getAuthTokens = async () => {
-  // const user = await currentUser();
-  // console.log("user", user!.id);
-  // console.log("accesssTokenMap", accesssTokenMap);
-  // return accesssTokenMap[user!.id] || [];
-};
 
 export const getTokensUsingRefreshToken = async (
   refreshToken: string,

@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { RestParameters, memoize } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
-import { ESLINT_DEFAULT_DIRS } from "next/dist/lib/constants";
 
 type UserDocument = Document<unknown, {}, User> &
   User &
@@ -15,16 +14,18 @@ type UserDocument = Document<unknown, {}, User> &
     _id: Schema.Types.ObjectId;
   }>;
 
-export async function createUserIfNotExists({
-  authId,
-}: {
-  authId: string;
-}): Promise<User | null> {
+export async function createUserIfNotExists(): Promise<User | null> {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) {
+    throw new Error("User not logged in");
+  }
+
   await connectToDb();
 
   try {
     const user = await UserModel.findOneAndUpdate(
-      { authId },
+      { authId: clerkUser.id },
       {},
       { upsert: true, new: true },
     );
@@ -302,6 +303,21 @@ export const storeCalendarTokens = withCurrentUser(
       user.calendarTokens = JSON.stringify(existingTokens);
 
       await user.save();
+    } catch (error: any) {
+      throw new Error(`Error storing tokens: ${error.message}`);
+    }
+  },
+);
+
+export const removeCalendarTokens = withCurrentUser(
+  async (user: UserDocument, calendarEmail: string) => {
+    try {
+      let tokens = user.calendarTokens ? JSON.parse(user.calendarTokens) : {};
+      delete tokens[calendarEmail];
+      user.calendarTokens = JSON.stringify(tokens);
+
+      await user.save();
+      revalidatePath("/calendars");
     } catch (error: any) {
       throw new Error(`Error storing tokens: ${error.message}`);
     }
