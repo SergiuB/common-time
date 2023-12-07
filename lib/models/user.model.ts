@@ -39,6 +39,10 @@ const userSchema = new mongoose.Schema<User>({
   eventTypes: [eventTypeSchema],
   schedules: [scheduleSchema],
   calendarTokens: { type: String },
+  calendars: {
+    calendarIdForAdd: String,
+    calendarIdsForCheckConflicts: [String],
+  },
 });
 
 const User =

@@ -51,7 +51,6 @@ const EventTypeCard = ({
 }: Props) => {
   const router = useRouter();
   const editEventType = () => {
-    console.log("editEventType");
     router.push(`/event-types/${id}`);
   };
   return (

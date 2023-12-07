@@ -49,6 +49,10 @@ export interface User {
   schedules: ScheduleCollection;
   // we serialize the token map due to Mongoose poor support for Maps
   calendarTokens: string;
+  calendars: {
+    calendarIdForAdd: string;
+    calendarIdsForCheckConflicts: string[];
+  };
 }
 
 export type Day =
@@ -85,5 +89,3 @@ export interface CalendarTokens {
   accessToken: string;
   refreshToken: string;
 }
-
-interface CalendarTokenMap extends Map<string, CalendarTokens> {}

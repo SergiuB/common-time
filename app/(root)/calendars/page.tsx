@@ -1,4 +1,7 @@
-import { getAllCalendarEmails } from "@/lib/actions/user.actions";
+import {
+  getAllCalendarEmails,
+  getCalendarIdForAdd,
+} from "@/lib/actions/user.actions";
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
 import { getCalendars } from "@/lib/actions/calendar.actions";
@@ -30,11 +33,16 @@ const Page = async () => {
     calendars: calendars[index],
   }));
 
+  const calendarIdForAdd = (await getCalendarIdForAdd()) || "none";
+
   return (
     <section className="flex flex-col gap-8">
       <CalendarAccountsCard accountEmails={calendarEmails} />
 
-      <AddToCalendarCard calendarsByEmail={calendarsByEmail} />
+      <AddToCalendarCard
+        calendarsByEmail={calendarsByEmail}
+        calendarId={calendarIdForAdd}
+      />
     </section>
   );
 };

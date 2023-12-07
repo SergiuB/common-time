@@ -348,6 +348,30 @@ export const getAllCalendarEmails = withCurrentUser(
   },
 );
 
+export const getCalendarIdForAdd = withCurrentUser(
+  async (user: UserDocument) => {
+    try {
+      return user.calendars?.calendarIdForAdd;
+    } catch (error: any) {
+      throw new Error(`Error getting selected calendar id: ${error.message}`);
+    }
+  },
+);
+
+export const setCalendarIdForAdd = withCurrentUser(
+  async (user: UserDocument, calendarId: string) => {
+    try {
+      user.calendars = user.calendars || {};
+      user.calendars.calendarIdForAdd = calendarId;
+
+      await user.save();
+      console.log("saved");
+    } catch (error: any) {
+      throw new Error(`Error setting selected calendar id: ${error.message}`);
+    }
+  },
+);
+
 function withCurrentUser<
   T extends (user: UserDocument, ...args: any[]) => Promise<any>,
 >(fn: T) {
