@@ -1,6 +1,7 @@
 import {
   getAllCalendarEmails,
   getCalendarIdForAdd,
+  getCalendarIdsForCheckConflicts,
 } from "@/lib/actions/user.actions";
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
@@ -20,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CalendarAccountsCard } from "@/components/CalendarAccountsCard";
 import { AddToCalendarCard } from "@/components/AddToCalendarCard";
+import { CheckForConflictsCard } from "@/components/CheckForConflictsCard";
 
 const Page = async () => {
   const calendarEmails = await getAllCalendarEmails();
@@ -33,7 +35,8 @@ const Page = async () => {
     calendars: calendars[index],
   }));
 
-  const calendarIdForAdd = (await getCalendarIdForAdd()) || "none";
+  const calendarIdForAdd = await getCalendarIdForAdd();
+  const calendarIdsForCheckConflicts = await getCalendarIdsForCheckConflicts();
 
   return (
     <section className="flex flex-col gap-8">
@@ -42,6 +45,11 @@ const Page = async () => {
       <AddToCalendarCard
         calendarsByEmail={calendarsByEmail}
         calendarId={calendarIdForAdd}
+      />
+
+      <CheckForConflictsCard
+        calendarsByEmail={calendarsByEmail}
+        calendarIds={calendarIdsForCheckConflicts}
       />
     </section>
   );

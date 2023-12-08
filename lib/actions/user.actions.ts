@@ -365,9 +365,31 @@ export const setCalendarIdForAdd = withCurrentUser(
       user.calendars.calendarIdForAdd = calendarId;
 
       await user.save();
-      console.log("saved");
     } catch (error: any) {
       throw new Error(`Error setting selected calendar id: ${error.message}`);
+    }
+  },
+);
+
+export const setCalendarIdForCheckConflicts = withCurrentUser(
+  async (user: UserDocument, calendarIds: string[]) => {
+    try {
+      user.calendars = user.calendars || {};
+      user.calendars.calendarIdsForCheckConflicts = calendarIds;
+
+      await user.save();
+    } catch (error: any) {
+      throw new Error(`Error setting selected calendar ids: ${error.message}`);
+    }
+  },
+);
+
+export const getCalendarIdsForCheckConflicts = withCurrentUser(
+  async (user: UserDocument) => {
+    try {
+      return user.calendars?.calendarIdsForCheckConflicts || [];
+    } catch (error: any) {
+      throw new Error(`Error getting selected calendar ids: ${error.message}`);
     }
   },
 );
