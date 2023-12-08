@@ -301,9 +301,11 @@ const EventTypeForm = ({
         />
 
         <div className="col-start-3"></div>
-        <Button type="submit" className="gap">
-          {action === "create" ? "Create" : "Save"}
-        </Button>
+        {form.formState.isDirty && (
+          <Button type="submit" className="gap">
+            {action === "create" ? "Create" : "Save"}
+          </Button>
+        )}
       </form>
     </Form>
   );
