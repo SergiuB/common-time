@@ -30,6 +30,8 @@ export const AddToCalendarCard = ({
     setCalendarIdForAdd(calendarId);
   }, []);
 
+  const moreThanOneAccount = calendarsByEmail.length > 1;
+
   return (
     <Card className="max-w-xl">
       <CardHeader>
@@ -46,7 +48,9 @@ export const AddToCalendarCard = ({
         >
           {calendarsByEmail.map(({ email, calendars }) => (
             <div key={email}>
-              <p className="text-small-regular text-neutral-500">{email}</p>
+              {moreThanOneAccount && (
+                <p className="text-small-regular text-neutral-500">{email}</p>
+              )}
               {calendars
                 .filter(({ accessRole }) =>
                   ["owner", "writer"].includes(accessRole),
@@ -55,7 +59,9 @@ export const AddToCalendarCard = ({
                   const id = getCalendarUniqueId(email, calendar.id);
                   return (
                     <div
-                      className="flex items-center space-x-2 px-4 py-2"
+                      className={`${
+                        moreThanOneAccount ? "px-4" : ""
+                      } flex items-center space-x-2 py-2`}
                       key={id}
                     >
                       <RadioGroupItem value={id} id={id} />

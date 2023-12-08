@@ -57,6 +57,7 @@ export const CheckForConflictsCard = ({
     debouncedSetCalendarIdsForCheckConflicts(selectedCalendarIds);
   }, [selectedCalendarIds, debouncedSetCalendarIdsForCheckConflicts]);
 
+  const moreThanOneAccount = calendarsByEmail.length > 1;
   return (
     <Card className="max-w-xl">
       <CardHeader>
@@ -69,11 +70,18 @@ export const CheckForConflictsCard = ({
       <CardContent className="flex flex-col gap-4 pt-4">
         {calendarsByEmail.map(({ email, calendars }) => (
           <div key={email}>
-            <p className="text-small-regular text-neutral-500">{email}</p>
+            {moreThanOneAccount && (
+              <p className="text-small-regular text-neutral-500">{email}</p>
+            )}
             {calendars.map((calendar) => {
               const id = getCalendarUniqueId(email, calendar.id);
               return (
-                <div className="flex items-center space-x-2 px-4 py-2" key={id}>
+                <div
+                  className={`${
+                    moreThanOneAccount ? "px-4" : ""
+                  } flex items-center space-x-2 py-2`}
+                  key={id}
+                >
                   <Checkbox
                     checked={selectedCalendarIds.includes(id)}
                     id={id}
