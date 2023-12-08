@@ -166,8 +166,8 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
         {selectedSchedule && (
           <div className="flex flex-col gap-8 p-4">
             {Object.entries(intervalData).map(([day, dayIntervals]) => (
-              <div key={day} className="flex flex-row gap-4">
-                <div className="flex flex-row items-center space-x-2">
+              <div key={day} className="flex flex-row items-center gap-4">
+                <div className="w-12 flex flex-row items-center space-x-2">
                   <Checkbox id="terms" checked={dayIntervals.length > 0} />
                   <label
                     htmlFor="terms"
@@ -182,13 +182,10 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
                     {dayIntervals.map(({ startMin, endMin }, index) => (
                       <div
                         key={index}
-                        className="flex flex-row items-center space-x-2"
+                        className="w-52 flex flex-row items-center space-x-2"
                       >
-                        {/* <p className="text-sm font-medium leading-none">
-                          {startMin} - {endMin}
-                        </p> */}
                         <TimeSelect minutes={startMin} />
-                        -
+                        <p>-</p>
                         <TimeSelect minutes={endMin} />
                       </div>
                     ))}
@@ -196,7 +193,7 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
                 )}
 
                 {dayIntervals.length === 0 && (
-                  <p className="text-base-regular text-neutral-400">
+                  <p className="w-52 text-base-regular text-neutral-400 text-center">
                     Unavailable
                   </p>
                 )}
