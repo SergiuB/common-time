@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -15,9 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
-import { createSchedule, fetchSchedules } from "@/lib/actions/user.actions";
-import { ScheduleCollection } from "@/lib/models/types";
-import { currentUser } from "@clerk/nextjs";
+import { createSchedule, updateSchedule } from "@/lib/actions/user.actions";
 import { Plus, CalendarCheck } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,9 +28,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ScheduleValidation } from "@/lib/validations/schedule";
-import { useState } from "react";
-import { days } from "@/constants";
-import { TimeSelect } from "./TimeSelect";
+import { useCallback, useEffect, useState } from "react";
+import { TimeSelect } from "@/components/TimeSelect";
+import debounce from "lodash/debounce";
+import { useToast } from "@/components/ui/use-toast";
 
 type Day =
   | "Monday"
@@ -49,6 +46,7 @@ export interface ScheduleData {
   name: string;
   id: string;
   intervals: {
+    id: string;
     day: Day;
     startMin: number;
     endMin: number;
@@ -61,6 +59,8 @@ interface Props {
 }
 
 export const ScheduleForm = ({ userId, schedules }: Props) => {
+  console.log("fgfg");
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(schedules[0]?.id || null);
 
@@ -80,29 +80,22 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
     (schedule) => schedule.id === selected,
   )!;
 
-  const intervalData = selectedSchedule?.intervals.reduce(
-    (acc, interval) => {
-      const day = interval.day;
-      const startMin = interval.startMin;
-      const endMin = interval.endMin;
-
-      acc[day].push({
-        startMin,
-        endMin,
-      });
-
-      return acc;
-    },
-    {
-      Monday: [],
-      Tuesday: [],
-      Wednesday: [],
-      Thursday: [],
-      Friday: [],
-      Saturday: [],
-      Sunday: [],
-    } as Record<Day, { startMin: number; endMin: number }[]>,
-  );
+  const handleScheduleChange = async (schedule: ScheduleData) => {
+    updateSchedule({
+      scheduleId: schedule.id,
+      name: schedule.name,
+      intervals: schedule.intervals.map((interval) => ({
+        day: interval.day,
+        startMin: interval.startMin,
+        endMin: interval.endMin,
+      })),
+    });
+    console.log("hello");
+    toast({
+      title: "Schedule updated",
+      duration: 3000,
+    });
+  };
 
   return (
     <div>
@@ -164,48 +157,148 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
 
       <div className="border w-full bg-white rounded-lg">
         {selectedSchedule && (
-          <div className="flex flex-col gap-8 p-4">
-            {Object.entries(intervalData).map(([day, dayIntervals]) => (
-              <div key={day} className="flex flex-row items-center gap-4">
-                <div className="w-12 flex flex-row items-center space-x-2">
-                  <Checkbox id="terms" checked={dayIntervals.length > 0} />
-                  <label
-                    htmlFor="terms"
-                    className="text-small-semibold text-neutral-700"
-                  >
-                    {day.toUpperCase().slice(0, 3)}
-                  </label>
-                </div>
-
-                {dayIntervals.length > 0 && (
-                  <div className="flex flex-row gap-2">
-                    {dayIntervals.map(({ startMin, endMin }, index) => (
-                      <div
-                        key={index}
-                        className="w-52 flex flex-row items-center space-x-2"
-                      >
-                        <TimeSelect minutes={startMin} />
-                        <p>-</p>
-                        <TimeSelect minutes={endMin} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {dayIntervals.length === 0 && (
-                  <p className="w-52 text-base-regular text-neutral-400 text-center">
-                    Unavailable
-                  </p>
-                )}
-
-                <Button variant="outline" className="rounded-full">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+          <ScheduleEditor
+            schedule={selectedSchedule}
+            onChange={handleScheduleChange}
+          />
         )}
       </div>
+    </div>
+  );
+};
+
+interface ScheduleEditorProps {
+  schedule: ScheduleData;
+  onChange: (schedule: ScheduleData) => void;
+}
+
+export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
+  const [scheduleState, setScheduleState] = useState({
+    ...schedule,
+    intervals: schedule.intervals.map((interval) => ({
+      ...interval,
+      startMin: interval.startMin,
+      endMin: interval.endMin,
+    })),
+  });
+
+  const intervalData = scheduleState.intervals.reduce(
+    (acc, interval) => {
+      const day = interval.day;
+      const startMin = interval.startMin;
+      const endMin = interval.endMin;
+
+      acc[day][interval.id] = {
+        startMin,
+        endMin,
+      };
+
+      return acc;
+    },
+    {
+      Monday: {},
+      Tuesday: {},
+      Wednesday: {},
+      Thursday: {},
+      Friday: {},
+      Saturday: {},
+      Sunday: {},
+    } as Record<Day, Record<string, { startMin: number; endMin: number }>>,
+  );
+
+  const handleStartChange = (intervalId: string, minutes: number) => {
+    setScheduleState((state) => {
+      const newState = {
+        ...state,
+        intervals: state.intervals.map((interval) =>
+          interval.id === intervalId
+            ? {
+                ...interval,
+                startMin: minutes,
+              }
+            : interval,
+        ),
+      };
+      debouncedOnChange(newState);
+      return newState;
+    });
+  };
+  const handleEndChange = (intervalId: string, minutes: number) => {
+    setScheduleState((state) => {
+      const newState = {
+        ...state,
+        intervals: state.intervals.map((interval) =>
+          interval.id === intervalId
+            ? {
+                ...interval,
+                endMin: minutes,
+              }
+            : interval,
+        ),
+      };
+      debouncedOnChange(newState);
+      return newState;
+    });
+  };
+
+  const debouncedOnChange = useCallback(
+    debounce((schedule: ScheduleData) => {
+      onChange(schedule);
+    }, 1000),
+    [onChange],
+  );
+
+  return (
+    <div className="flex flex-col gap-8 p-4">
+      {Object.entries(intervalData).map(([day, dayIntervals]) => (
+        <div key={day} className="flex flex-row items-center gap-4">
+          <div className="w-12 flex flex-row items-center space-x-2">
+            <Checkbox
+              id="terms"
+              checked={Object.entries(dayIntervals).length > 0}
+            />
+            <label
+              htmlFor="terms"
+              className="text-small-semibold text-neutral-700"
+            >
+              {day.toUpperCase().slice(0, 3)}
+            </label>
+          </div>
+
+          {Object.entries(dayIntervals).length > 0 && (
+            <div className="flex flex-row gap-2">
+              {Object.entries(dayIntervals).map(
+                ([intervalId, { startMin, endMin }], index) => (
+                  <div
+                    key={index}
+                    className="w-52 flex flex-row items-center space-x-2"
+                  >
+                    <TimeSelect
+                      minutes={startMin}
+                      onChange={(min) => handleStartChange(intervalId, min)}
+                    />
+                    <p>-</p>
+                    <TimeSelect
+                      minutes={endMin}
+                      onChange={(min) => handleEndChange(intervalId, min)}
+                    />
+                  </div>
+                ),
+              )}
+            </div>
+          )}
+
+          {Object.entries(dayIntervals).length === 0 && (
+            <p className="w-52 text-base-regular text-neutral-400 ">
+              Unavailable
+            </p>
+          )}
+
+          <Button variant="outline" className="rounded-full">
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      ))}
     </div>
   );
 };

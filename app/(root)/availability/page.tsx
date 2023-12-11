@@ -7,6 +7,7 @@ const toSchedulePojo = (schedule: Schedule): ScheduleData => ({
   name: schedule.name,
   id: schedule._id!.toString(),
   intervals: schedule.intervals.map((interval) => ({
+    id: interval._id!.toString(),
     day: interval.day,
     startMin: interval.startMin,
     endMin: interval.endMin,

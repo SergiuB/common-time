@@ -3,7 +3,6 @@ import {
   RedirectToSignIn,
   SignedIn,
   SignedOut,
-  currentUser,
 } from "@clerk/nextjs";
 import "../globals.css";
 import type { Metadata } from "next";
@@ -13,13 +12,13 @@ import Bottombar from "@/components/Bottombar";
 import LeftSidebar from "@/components/LeftSidebar";
 import { redirect } from "next/navigation";
 import { createUserIfNotExists } from "@/lib/actions/user.actions";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Good Time",
   description: "Simple booking app",
-  // icons: [{ rel: "icon", url: "favicon.ico" }],
 };
 
 const Layout = async ({ children }: React.PropsWithChildren) => {
@@ -41,6 +40,7 @@ const Layout = async ({ children }: React.PropsWithChildren) => {
           </section>
         </main>
         <Bottombar />
+        <Toaster />
       </body>
     </html>
   );

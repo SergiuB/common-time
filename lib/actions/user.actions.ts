@@ -1,6 +1,13 @@
 "use server";
 
-import { Color, EventType, Schedule, User } from "../models/types";
+import {
+  Color,
+  Day,
+  EventType,
+  Interval,
+  Schedule,
+  User,
+} from "../models/types";
 import UserModel from "../models/user.model";
 import { connectToDb } from "../mongoose";
 import { revalidatePath } from "next/cache";
@@ -278,6 +285,39 @@ export async function createSchedule({
     throw new Error(`Failed to get user schedules: ${error.message}`);
   }
 }
+
+export const updateSchedule = withCurrentUser(
+  async (
+    user: UserDocument,
+    {
+      scheduleId,
+      name,
+      intervals,
+    }: {
+      scheduleId: string;
+      name: string;
+      intervals: {
+        day: Day;
+        startMin: number;
+        endMin: number;
+      }[];
+    },
+  ) => {
+    try {
+      const schedule = user.schedules?.id(scheduleId);
+      if (!schedule) throw new Error("Schedule not found");
+
+      schedule.name = name;
+      schedule.intervals = intervals;
+
+      await user.save();
+
+      revalidatePath("/availability");
+    } catch (error: any) {
+      throw new Error(`Failed to update schedule: ${error.message}`);
+    }
+  },
+);
 
 export const storeCalendarTokens = withCurrentUser(
   async (
