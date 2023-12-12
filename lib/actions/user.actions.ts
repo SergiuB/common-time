@@ -14,6 +14,7 @@ import { revalidatePath } from "next/cache";
 import { RestParameters, memoize } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
+import { defaultEndMin, defaultStartMin } from "@/constants";
 
 type UserDocument = Document<unknown, {}, User> &
   User &
@@ -42,11 +43,15 @@ export async function createUserIfNotExists(): Promise<User | null> {
       const defaultSchedule: Schedule = {
         name: "Working Hours",
         intervals: [
-          { day: "Monday", startMin: 540, endMin: 1020 },
-          { day: "Tuesday", startMin: 540, endMin: 1020 },
-          { day: "Wednesday", startMin: 540, endMin: 1020 },
-          { day: "Thursday", startMin: 540, endMin: 1020 },
-          { day: "Friday", startMin: 540, endMin: 1020 },
+          { day: "Monday", startMin: defaultStartMin, endMin: defaultEndMin },
+          { day: "Tuesday", startMin: defaultStartMin, endMin: defaultEndMin },
+          {
+            day: "Wednesday",
+            startMin: defaultStartMin,
+            endMin: defaultEndMin,
+          },
+          { day: "Thursday", startMin: defaultStartMin, endMin: defaultEndMin },
+          { day: "Friday", startMin: defaultStartMin, endMin: defaultEndMin },
         ],
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       };
@@ -266,11 +271,11 @@ export async function createSchedule({
     const defaultSchedule: Schedule = {
       name: name,
       intervals: [
-        { day: "Monday", startMin: 540, endMin: 1020 },
-        { day: "Tuesday", startMin: 540, endMin: 1020 },
-        { day: "Wednesday", startMin: 540, endMin: 1020 },
-        { day: "Thursday", startMin: 540, endMin: 1020 },
-        { day: "Friday", startMin: 540, endMin: 1020 },
+        { day: "Monday", startMin: defaultStartMin, endMin: defaultEndMin },
+        { day: "Tuesday", startMin: defaultStartMin, endMin: defaultEndMin },
+        { day: "Wednesday", startMin: defaultStartMin, endMin: defaultEndMin },
+        { day: "Thursday", startMin: defaultStartMin, endMin: defaultEndMin },
+        { day: "Friday", startMin: defaultStartMin, endMin: defaultEndMin },
       ],
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };

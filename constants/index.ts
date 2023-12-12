@@ -78,3 +78,6 @@ export const days = [
   "Saturday",
   "Sunday",
 ] as const;
+
+export const defaultStartMin = 9 * 60;
+export const defaultEndMin = 17 * 60;

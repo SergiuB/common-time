@@ -28,10 +28,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ScheduleValidation } from "@/lib/validations/schedule";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { TimeSelect } from "@/components/TimeSelect";
 import debounce from "lodash/debounce";
 import { useToast } from "@/components/ui/use-toast";
+import { has } from "lodash";
+import { defaultEndMin, defaultStartMin } from "@/constants";
 
 type Day =
   | "Monday"
@@ -42,15 +44,16 @@ type Day =
   | "Saturday"
   | "Sunday";
 
+interface IntervalData {
+  id: string;
+  day: Day;
+  startMin: number;
+  endMin: number;
+}
 export interface ScheduleData {
   name: string;
   id: string;
-  intervals: {
-    id: string;
-    day: Day;
-    startMin: number;
-    endMin: number;
-  }[];
+  intervals: IntervalData[];
 }
 
 interface Props {
@@ -59,7 +62,6 @@ interface Props {
 }
 
 export const ScheduleForm = ({ userId, schedules }: Props) => {
-  console.log("fgfg");
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(schedules[0]?.id || null);
@@ -90,7 +92,6 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
         endMin: interval.endMin,
       })),
     });
-    console.log("hello");
     toast({
       title: "Schedule updated",
       duration: 3000,
@@ -156,12 +157,12 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
       </div>
 
       <div className="border w-full bg-white rounded-lg">
-        {selectedSchedule && (
+        {selectedSchedule ? (
           <ScheduleEditor
             schedule={selectedSchedule}
             onChange={handleScheduleChange}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -173,6 +174,7 @@ interface ScheduleEditorProps {
 }
 
 export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
+  const hasRendered = useRef(false);
   const [scheduleState, setScheduleState] = useState({
     ...schedule,
     intervals: schedule.intervals.map((interval) => ({
@@ -219,7 +221,6 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
             : interval,
         ),
       };
-      debouncedOnChange(newState);
       return newState;
     });
   };
@@ -236,7 +237,42 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
             : interval,
         ),
       };
-      debouncedOnChange(newState);
+      return newState;
+    });
+  };
+
+  const sortIntervalsByStartMin = (intervals: { startMin: number }[]) => {
+    return intervals.sort((a, b) => a.startMin - b.startMin);
+  };
+
+  const getLastIntervalForDay = (intervals: IntervalData[], day: Day) => {
+    const intervalsForDay = scheduleState.intervals
+      .filter((interval) => interval.day === day)
+      .sort((a, b) => a.startMin - b.startMin);
+    return intervalsForDay[intervalsForDay.length - 1];
+  };
+
+  const handleAddInterval = (day: string) => {
+    setScheduleState((state) => {
+      const lastInterval = getLastIntervalForDay(state.intervals, day as Day);
+
+      const startMin = lastInterval
+        ? (lastInterval.endMin + 60) % (60 * 24)
+        : defaultStartMin;
+      const endMin = lastInterval ? (startMin + 60) % (60 * 24) : defaultEndMin;
+
+      const newState = {
+        ...state,
+        intervals: [
+          ...state.intervals,
+          {
+            id: Math.random().toString(),
+            day: day as Day,
+            startMin,
+            endMin,
+          },
+        ],
+      };
       return newState;
     });
   };
@@ -245,14 +281,22 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
     debounce((schedule: ScheduleData) => {
       onChange(schedule);
     }, 1000),
-    [onChange],
+    [],
   );
+
+  useEffect(() => {
+    if (hasRendered.current) {
+      debouncedOnChange(scheduleState);
+    } else {
+      hasRendered.current = true;
+    }
+  }, [scheduleState, debouncedOnChange]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
       {Object.entries(intervalData).map(([day, dayIntervals]) => (
-        <div key={day} className="flex flex-row items-center gap-4">
-          <div className="w-12 flex flex-row items-center space-x-2">
+        <div key={day} className="flex flex-row justify-items-center gap-8">
+          <div className="w-12 flex flex-row space-x-2 pt-3">
             <Checkbox
               id="terms"
               checked={Object.entries(dayIntervals).length > 0}
@@ -266,7 +310,7 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
           </div>
 
           {Object.entries(dayIntervals).length > 0 && (
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-col gap-2">
               {Object.entries(dayIntervals).map(
                 ([intervalId, { startMin, endMin }], index) => (
                   <div
@@ -294,7 +338,11 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
             </p>
           )}
 
-          <Button variant="outline" className="rounded-full">
+          <Button
+            variant="outline"
+            className="rounded-full ml-20"
+            onClick={() => handleAddInterval(day)}
+          >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
