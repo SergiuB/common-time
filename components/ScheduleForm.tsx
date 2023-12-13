@@ -174,7 +174,7 @@ interface ScheduleEditorProps {
 }
 
 export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
-  const hasRendered = useRef(false);
+  const canTriggerOnChange = useRef(false);
   const [scheduleState, setScheduleState] = useState({
     ...schedule,
     intervals: schedule.intervals.map((interval) => ({
@@ -241,17 +241,6 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
     });
   };
 
-  const sortIntervalsByStartMin = (intervals: { startMin: number }[]) => {
-    return intervals.sort((a, b) => a.startMin - b.startMin);
-  };
-
-  const getLastIntervalForDay = (intervals: IntervalData[], day: Day) => {
-    const intervalsForDay = scheduleState.intervals
-      .filter((interval) => interval.day === day)
-      .sort((a, b) => a.startMin - b.startMin);
-    return intervalsForDay[intervalsForDay.length - 1];
-  };
-
   const handleAddInterval = (day: string) => {
     setScheduleState((state) => {
       const lastInterval = getLastIntervalForDay(state.intervals, day as Day);
@@ -297,12 +286,17 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
   );
 
   useEffect(() => {
-    if (hasRendered.current) {
+    if (canTriggerOnChange.current) {
       debouncedOnChange(scheduleState);
     } else {
-      hasRendered.current = true;
+      canTriggerOnChange.current = true;
     }
   }, [scheduleState, debouncedOnChange]);
+
+  useEffect(() => {
+    canTriggerOnChange.current = false;
+    setScheduleState(schedule);
+  }, [schedule]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
@@ -372,4 +366,11 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
       ))}
     </div>
   );
+};
+
+const getLastIntervalForDay = (intervals: IntervalData[], day: Day) => {
+  const intervalsForDay = intervals
+    .filter((interval) => interval.day === day)
+    .sort((a, b) => a.startMin - b.startMin);
+  return intervalsForDay[intervalsForDay.length - 1];
 };
