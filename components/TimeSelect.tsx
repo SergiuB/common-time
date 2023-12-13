@@ -26,7 +26,7 @@ export const TimeSelect = ({ minutes, onChange }: Props) => {
       value={minutesToTime(minutes)}
       onValueChange={(time) => onChange && onChange(timeToMinutes(time))}
     >
-      <SelectTrigger className="w-24 no-focus">
+      <SelectTrigger className="w-24">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

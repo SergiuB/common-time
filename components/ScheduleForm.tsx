@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
 import { createSchedule, updateSchedule } from "@/lib/actions/user.actions";
-import { Plus, CalendarCheck } from "lucide-react";
+import { Plus, CalendarCheck, X } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -277,6 +277,18 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
     });
   };
 
+  const handleRemoveInterval = (intervalId: string) => {
+    setScheduleState((state) => {
+      const newState = {
+        ...state,
+        intervals: state.intervals.filter(
+          (interval) => interval.id !== intervalId,
+        ),
+      };
+      return newState;
+    });
+  };
+
   const debouncedOnChange = useCallback(
     debounce((schedule: ScheduleData) => {
       onChange(schedule);
@@ -295,8 +307,8 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
   return (
     <div className="flex flex-col gap-8 p-4">
       {Object.entries(intervalData).map(([day, dayIntervals]) => (
-        <div key={day} className="flex flex-row justify-items-center gap-8">
-          <div className="w-12 flex flex-row space-x-2 pt-3">
+        <div key={day} className="flex flex-row items-start gap-8">
+          <div className="w-12 flex flex-row space-x-2 pt-2.5">
             <Checkbox
               id="terms"
               checked={Object.entries(dayIntervals).length > 0}
@@ -310,22 +322,33 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
           </div>
 
           {Object.entries(dayIntervals).length > 0 && (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2  ">
               {Object.entries(dayIntervals).map(
                 ([intervalId, { startMin, endMin }], index) => (
                   <div
                     key={index}
-                    className="w-52 flex flex-row items-center space-x-2"
+                    className="w-60 flex flex-row items-center  gap-2"
                   >
-                    <TimeSelect
-                      minutes={startMin}
-                      onChange={(min) => handleStartChange(intervalId, min)}
-                    />
+                    <div>
+                      <TimeSelect
+                        minutes={startMin}
+                        onChange={(min) => handleStartChange(intervalId, min)}
+                      />
+                    </div>
                     <p>-</p>
-                    <TimeSelect
-                      minutes={endMin}
-                      onChange={(min) => handleEndChange(intervalId, min)}
-                    />
+                    <div>
+                      <TimeSelect
+                        minutes={endMin}
+                        onChange={(min) => handleEndChange(intervalId, min)}
+                      />
+                    </div>
+                    <Button
+                      variant="ghost"
+                      className=""
+                      onClick={() => handleRemoveInterval(intervalId)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 ),
               )}
@@ -333,14 +356,14 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
           )}
 
           {Object.entries(dayIntervals).length === 0 && (
-            <p className="w-52 text-base-regular text-neutral-400 ">
+            <p className="w-60 pt-2 text-base-regular text-neutral-400 ">
               Unavailable
             </p>
           )}
 
           <Button
             variant="outline"
-            className="rounded-full ml-20"
+            className="rounded-full ml-4"
             onClick={() => handleAddInterval(day)}
           >
             <Plus className="h-4 w-4" />
