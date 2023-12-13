@@ -28,7 +28,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ScheduleValidation } from "@/lib/validations/schedule";
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { TimeSelect } from "@/components/TimeSelect";
 import debounce from "lodash/debounce";
 import { useToast } from "@/components/ui/use-toast";
@@ -82,21 +89,24 @@ export const ScheduleForm = ({ userId, schedules }: Props) => {
     (schedule) => schedule.id === selected,
   )!;
 
-  const handleScheduleChange = async (schedule: ScheduleData) => {
-    updateSchedule({
-      scheduleId: schedule.id,
-      name: schedule.name,
-      intervals: schedule.intervals.map((interval) => ({
-        day: interval.day,
-        startMin: interval.startMin,
-        endMin: interval.endMin,
-      })),
-    });
-    toast({
-      title: "Schedule updated",
-      duration: 3000,
-    });
-  };
+  const handleScheduleChange = useCallback(
+    async (schedule: ScheduleData) => {
+      updateSchedule({
+        scheduleId: schedule.id,
+        name: schedule.name,
+        intervals: schedule.intervals.map((interval) => ({
+          day: interval.day,
+          startMin: interval.startMin,
+          endMin: interval.endMin,
+        })),
+      });
+      toast({
+        title: "Schedule updated",
+        duration: 3000,
+      });
+    },
+    [toast],
+  );
 
   return (
     <div>
@@ -175,44 +185,14 @@ interface ScheduleEditorProps {
 
 export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
   const canTriggerOnChange = useRef(false);
-  const [scheduleState, dispatch] = useReducer(reducer, {
-    ...schedule,
-    intervals: schedule.intervals.map((interval) => ({
-      ...interval,
-      startMin: interval.startMin,
-      endMin: interval.endMin,
-    })),
-  });
+  const [scheduleState, dispatch] = useReducer(reducer, schedule);
 
-  const intervalData = scheduleState.intervals.reduce(
-    (acc, interval) => {
-      const day = interval.day;
-      const startMin = interval.startMin;
-      const endMin = interval.endMin;
-
-      acc[day][interval.id] = {
-        startMin,
-        endMin,
-      };
-
-      return acc;
-    },
-    {
-      Monday: {},
-      Tuesday: {},
-      Wednesday: {},
-      Thursday: {},
-      Friday: {},
-      Saturday: {},
-      Sunday: {},
-    } as Record<Day, Record<string, { startMin: number; endMin: number }>>,
-  );
-
-  const debouncedOnChange = useCallback(
-    debounce((schedule: ScheduleData) => {
-      onChange(schedule);
-    }, 1000),
-    [],
+  const debouncedOnChange = useMemo(
+    () =>
+      debounce((schedule: ScheduleData) => {
+        onChange(schedule);
+      }, 1000),
+    [onChange],
   );
 
   useEffect(() => {
