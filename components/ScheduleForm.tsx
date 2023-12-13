@@ -28,7 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { ScheduleValidation } from "@/lib/validations/schedule";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { TimeSelect } from "@/components/TimeSelect";
 import debounce from "lodash/debounce";
 import { useToast } from "@/components/ui/use-toast";
@@ -175,7 +175,7 @@ interface ScheduleEditorProps {
 
 export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
   const canTriggerOnChange = useRef(false);
-  const [scheduleState, setScheduleState] = useState({
+  const [scheduleState, dispatch] = useReducer(reducer, {
     ...schedule,
     intervals: schedule.intervals.map((interval) => ({
       ...interval,
@@ -208,86 +208,6 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
     } as Record<Day, Record<string, { startMin: number; endMin: number }>>,
   );
 
-  const changeIntervalStart = (intervalId: string, minutes: number) => {
-    setScheduleState((state) => {
-      const newState = {
-        ...state,
-        intervals: state.intervals.map((interval) =>
-          interval.id === intervalId
-            ? {
-                ...interval,
-                startMin: minutes,
-              }
-            : interval,
-        ),
-      };
-      return newState;
-    });
-  };
-  const changeIntervalEnd = (intervalId: string, minutes: number) => {
-    setScheduleState((state) => {
-      const newState = {
-        ...state,
-        intervals: state.intervals.map((interval) =>
-          interval.id === intervalId
-            ? {
-                ...interval,
-                endMin: minutes,
-              }
-            : interval,
-        ),
-      };
-      return newState;
-    });
-  };
-
-  const addInterval = (day: Day) => {
-    setScheduleState((state) => {
-      const lastInterval = getLastIntervalForDay(state.intervals, day);
-
-      const startMin = lastInterval
-        ? (lastInterval.endMin + 60) % (60 * 24)
-        : defaultStartMin;
-      const endMin = lastInterval ? (startMin + 60) % (60 * 24) : defaultEndMin;
-
-      const newState = {
-        ...state,
-        intervals: [
-          ...state.intervals,
-          {
-            id: Math.random().toString(),
-            day: day,
-            startMin,
-            endMin,
-          },
-        ],
-      };
-      return newState;
-    });
-  };
-
-  const removeInterval = (intervalId: string) => {
-    setScheduleState((state) => {
-      const newState = {
-        ...state,
-        intervals: state.intervals.filter(
-          (interval) => interval.id !== intervalId,
-        ),
-      };
-      return newState;
-    });
-  };
-
-  const removeIntervalsForDay = (day: Day) => {
-    setScheduleState((state) => {
-      const newState = {
-        ...state,
-        intervals: state.intervals.filter((interval) => interval.day !== day),
-      };
-      return newState;
-    });
-  };
-
   const debouncedOnChange = useCallback(
     debounce((schedule: ScheduleData) => {
       onChange(schedule);
@@ -305,90 +225,231 @@ export const ScheduleEditor = ({ schedule, onChange }: ScheduleEditorProps) => {
 
   useEffect(() => {
     canTriggerOnChange.current = false;
-    setScheduleState(schedule);
+    dispatch({
+      type: "init",
+      payload: {
+        schedule,
+      },
+    });
   }, [schedule]);
 
   return (
     <div className="flex flex-col gap-8 p-4">
-      {Object.entries(intervalData).map((intervalEntry) => {
-        const day = intervalEntry[0] as Day;
-        const dayIntervals = intervalEntry[1];
-        return (
-          <div key={day} className="flex flex-row items-start gap-8">
-            <div className="w-12 flex flex-row space-x-2 pt-2.5">
-              <Checkbox
-                id="terms"
-                checked={Object.entries(dayIntervals).length > 0}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    addInterval(day);
-                  } else {
-                    removeIntervalsForDay(day);
+      {groupIntervalsByDay(scheduleState.intervals).map(
+        ([day, dayIntervals]) => {
+          return (
+            <div key={day} className="flex flex-row items-start gap-8">
+              <div className="w-12 flex flex-row space-x-2 pt-2.5">
+                <Checkbox
+                  id="terms"
+                  checked={Object.entries(dayIntervals).length > 0}
+                  onCheckedChange={(checked) =>
+                    dispatch({
+                      type: checked ? "addInterval" : "removeIntervalsForDay",
+                      payload: {
+                        day,
+                      },
+                    })
                   }
-                }}
-              />
-              <label
-                htmlFor="terms"
-                className="text-small-semibold text-neutral-700"
-              >
-                {day.toUpperCase().slice(0, 3)}
-              </label>
-            </div>
-
-            {Object.entries(dayIntervals).length > 0 && (
-              <div className="flex flex-col gap-2  ">
-                {Object.entries(dayIntervals).map(
-                  ([intervalId, { startMin, endMin }], index) => (
-                    <div
-                      key={index}
-                      className="w-60 flex flex-row items-center  gap-2"
-                    >
-                      <div>
-                        <TimeSelect
-                          minutes={startMin}
-                          onChange={(min) =>
-                            changeIntervalStart(intervalId, min)
-                          }
-                        />
-                      </div>
-                      <p>-</p>
-                      <div>
-                        <TimeSelect
-                          minutes={endMin}
-                          onChange={(min) => changeIntervalEnd(intervalId, min)}
-                        />
-                      </div>
-                      <Button
-                        variant="ghost"
-                        className=""
-                        onClick={() => removeInterval(intervalId)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ),
-                )}
+                />
+                <label
+                  htmlFor="terms"
+                  className="text-small-semibold text-neutral-700"
+                >
+                  {day.toUpperCase().slice(0, 3)}
+                </label>
               </div>
-            )}
 
-            {Object.entries(dayIntervals).length === 0 && (
-              <p className="w-60 pt-2 text-base-regular text-neutral-400 ">
-                Unavailable
-              </p>
-            )}
+              {Object.entries(dayIntervals).length > 0 && (
+                <div className="flex flex-col gap-2  ">
+                  {Object.entries(dayIntervals).map(
+                    ([intervalId, { startMin, endMin }], index) => (
+                      <div
+                        key={index}
+                        className="w-60 flex flex-row items-center  gap-2"
+                      >
+                        <div>
+                          <TimeSelect
+                            minutes={startMin}
+                            onChange={(min) =>
+                              dispatch({
+                                type: "changeIntervalStart",
+                                payload: {
+                                  intervalId,
+                                  minutes: min,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                        <p>-</p>
+                        <div>
+                          <TimeSelect
+                            minutes={endMin}
+                            onChange={(min) =>
+                              dispatch({
+                                type: "changeIntervalEnd",
+                                payload: {
+                                  intervalId,
+                                  minutes: min,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                        <Button
+                          variant="ghost"
+                          className=""
+                          onClick={() =>
+                            dispatch({
+                              type: "removeInterval",
+                              payload: { intervalId },
+                            })
+                          }
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ),
+                  )}
+                </div>
+              )}
 
-            <Button
-              variant="outline"
-              className="rounded-full ml-4"
-              onClick={() => addInterval(day)}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      })}
+              {Object.entries(dayIntervals).length === 0 && (
+                <p className="w-60 pt-2 text-base-regular text-neutral-400 ">
+                  Unavailable
+                </p>
+              )}
+
+              <Button
+                variant="outline"
+                className="rounded-full ml-4"
+                onClick={() =>
+                  dispatch({ type: "addInterval", payload: { day } })
+                }
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          );
+        },
+      )}
     </div>
   );
+};
+
+const reducer = (
+  state: ScheduleData,
+  action:
+    | {
+        type: "changeIntervalStart";
+        payload: {
+          intervalId: string;
+          minutes: number;
+        };
+      }
+    | {
+        type: "changeIntervalEnd";
+        payload: {
+          intervalId: string;
+          minutes: number;
+        };
+      }
+    | {
+        type: "addInterval";
+        payload: {
+          day: Day;
+        };
+      }
+    | {
+        type: "removeInterval";
+        payload: {
+          intervalId: string;
+        };
+      }
+    | {
+        type: "removeIntervalsForDay";
+        payload: {
+          day: Day;
+        };
+      }
+    | {
+        type: "init";
+        payload: {
+          schedule: ScheduleData;
+        };
+      },
+) => {
+  switch (action.type) {
+    case "changeIntervalStart":
+      return {
+        ...state,
+        intervals: state.intervals.map((interval) =>
+          interval.id === action.payload.intervalId
+            ? {
+                ...interval,
+                startMin: action.payload.minutes,
+              }
+            : interval,
+        ),
+      };
+    case "changeIntervalEnd":
+      return {
+        ...state,
+        intervals: state.intervals.map((interval) =>
+          interval.id === action.payload.intervalId
+            ? {
+                ...interval,
+                endMin: action.payload.minutes,
+              }
+            : interval,
+        ),
+      };
+    case "addInterval":
+      const lastInterval = getLastIntervalForDay(
+        state.intervals,
+        action.payload.day,
+      );
+
+      const startMin = lastInterval
+        ? (lastInterval.endMin + 60) % (60 * 24)
+        : defaultStartMin;
+      const endMin = lastInterval ? (startMin + 60) % (60 * 24) : defaultEndMin;
+
+      return {
+        ...state,
+        intervals: [
+          ...state.intervals,
+          {
+            id: Math.random().toString(),
+            day: action.payload.day,
+            startMin,
+            endMin,
+          },
+        ],
+      };
+    case "removeInterval":
+      return {
+        ...state,
+        intervals: state.intervals.filter(
+          (interval) => interval.id !== action.payload.intervalId,
+        ),
+      };
+    case "removeIntervalsForDay":
+      return {
+        ...state,
+        intervals: state.intervals.filter(
+          (interval) => interval.day !== action.payload.day,
+        ),
+      };
+    case "init":
+      return {
+        ...action.payload.schedule,
+      };
+
+    default:
+      return state;
+  }
 };
 
 const getLastIntervalForDay = (intervals: IntervalData[], day: Day) => {
@@ -397,3 +458,24 @@ const getLastIntervalForDay = (intervals: IntervalData[], day: Day) => {
     .sort((a, b) => a.startMin - b.startMin);
   return intervalsForDay[intervalsForDay.length - 1];
 };
+
+const groupIntervalsByDay = (intervals: IntervalData[]) =>
+  intervals.reduce(
+    (acc, { id, day, startMin, endMin }) => {
+      acc.find((dayEntry) => dayEntry[0] === day)![1][id] = {
+        startMin,
+        endMin,
+      };
+
+      return acc;
+    },
+    [
+      ["Monday", {}],
+      ["Tuesday", {}],
+      ["Wednesday", {}],
+      ["Thursday", {}],
+      ["Friday", {}],
+      ["Saturday", {}],
+      ["Sunday", {}],
+    ] as [Day, Record<string, { startMin: number; endMin: number }>][],
+  );
