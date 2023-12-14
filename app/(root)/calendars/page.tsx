@@ -66,7 +66,7 @@ const Page = async () => {
             remove or reauth them.
           </AlertDescription>
         </Alert>
-      ) : (
+      ) : validAccountData.length ? (
         <>
           <AddToCalendarCard
             calendarsByAccountEmail={validAccountData}
@@ -78,6 +78,14 @@ const Page = async () => {
             calendarIds={calendarIdsForCheckConflicts}
           />
         </>
+      ) : (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Hello there!</AlertTitle>
+          <AlertDescription>
+            You should really add some Google Calendar accounts to get started.
+          </AlertDescription>
+        </Alert>
       )}
     </section>
   );

@@ -52,7 +52,7 @@ export const CalendarAccountsCard = ({
             <p className="text-small-regular">Add</p>
           </Link>
         </CardHeader>
-        <Separator />
+        {accountData.length > 0 && <Separator />}
         <CardContent className="flex flex-col gap-4 p-4">
           {accountData.map(({ email, failedAuth }) => (
             <div

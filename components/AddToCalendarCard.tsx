@@ -22,7 +22,7 @@ interface CalendarConfigurationCardProps {
     email: string;
     calendars: CalendarData[];
   }[];
-  calendarId: string;
+  calendarId?: string;
 }
 
 export const AddToCalendarCard = ({
