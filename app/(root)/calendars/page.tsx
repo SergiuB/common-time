@@ -9,8 +9,28 @@ import { AddToCalendarCard } from "@/components/AddToCalendarCard";
 import { CheckForConflictsCard } from "@/components/CheckForConflictsCard";
 import { CalendarData } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, HeartHandshake } from "lucide-react";
 
+const FailedAuthAlert = (
+  <Alert variant="destructive">
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Heads up!</AlertTitle>
+    <AlertDescription>
+      You have accounts with failed authentication/authorization. Please remove
+      or reauth them.
+    </AlertDescription>
+  </Alert>
+);
+
+const NoAccountsAlert = (
+  <Alert>
+    <HeartHandshake className="h-4 w-4" />
+    <AlertTitle>Hello there!</AlertTitle>
+    <AlertDescription>
+      You should really add some Google Calendar accounts to get started.
+    </AlertDescription>
+  </Alert>
+);
 const Page = async () => {
   const accountEmails = await getAllCalendarAccountEmails();
 
@@ -58,14 +78,7 @@ const Page = async () => {
     <section className="flex flex-col gap-8 max-w-xl">
       <CalendarAccountsCard accountData={accountData} />
       {hasAccountsWithFailedAuth ? (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Heads up!</AlertTitle>
-          <AlertDescription>
-            You have accounts with failed authentication/authorization. Please
-            remove or reauth them.
-          </AlertDescription>
-        </Alert>
+        FailedAuthAlert
       ) : validAccountData.length ? (
         <>
           <AddToCalendarCard
@@ -79,13 +92,7 @@ const Page = async () => {
           />
         </>
       ) : (
-        <Alert>
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Hello there!</AlertTitle>
-          <AlertDescription>
-            You should really add some Google Calendar accounts to get started.
-          </AlertDescription>
-        </Alert>
+        NoAccountsAlert
       )}
     </section>
   );

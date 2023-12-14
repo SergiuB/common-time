@@ -424,6 +424,7 @@ export const setCalendarIdForAdd = withCurrentUser(
       user.calendars.calendarIdForAdd = calendarId;
 
       await user.save();
+      revalidatePath("/calendars");
     } catch (error: any) {
       throw new Error(`Error setting selected calendar id: ${error.message}`);
     }
@@ -437,6 +438,7 @@ export const setCalendarIdForCheckConflicts = withCurrentUser(
       user.calendars.calendarIdsForCheckConflicts = calendarIds;
 
       await user.save();
+      revalidatePath("/calendars");
     } catch (error: any) {
       throw new Error(`Error setting selected calendar ids: ${error.message}`);
     }

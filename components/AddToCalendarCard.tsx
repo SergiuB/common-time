@@ -16,6 +16,18 @@ import { use, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { CalendarData, getCalendarUniqueId } from "@/lib/types";
 import { setCalendarIdForAdd } from "@/lib/actions/user.actions";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+
+const NoCalendarToAddTo = (
+  <Alert>
+    <AlertCircle className="h-4 w-4" />
+    <AlertTitle>Heads up!</AlertTitle>
+    <AlertDescription>
+      You really should select a calendar to add new events to.
+    </AlertDescription>
+  </Alert>
+);
 
 interface CalendarConfigurationCardProps {
   calendarsByAccountEmail: {
@@ -35,6 +47,8 @@ export const AddToCalendarCard = ({
 
   const moreThanOneAccount = calendarsByAccountEmail.length > 1;
 
+  const id = calendarId || "none";
+
   return (
     <Card>
       <CardHeader>
@@ -45,10 +59,7 @@ export const AddToCalendarCard = ({
       </CardHeader>
       <Separator />
       <CardContent className="flex flex-col gap-4 pt-4">
-        <RadioGroup
-          defaultValue={calendarId || "none"}
-          onValueChange={handleCalendarChange}
-        >
+        <RadioGroup defaultValue={id} onValueChange={handleCalendarChange}>
           {calendarsByAccountEmail.map(({ email, calendars }) => (
             <div key={email}>
               {moreThanOneAccount && (
@@ -79,6 +90,7 @@ export const AddToCalendarCard = ({
             <RadioGroupItem value="none" id="none" />
             <Label htmlFor="r1">Do not add new events to a calendar</Label>
           </div>
+          {id === "none" && NoCalendarToAddTo}
         </RadioGroup>
       </CardContent>
     </Card>
