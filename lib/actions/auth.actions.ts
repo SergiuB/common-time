@@ -69,19 +69,23 @@ export const getTokensUsingRefreshToken = async (
     }),
   });
 
+  const data = await response.json();
+
   if (!response.ok) {
     return {
       ok: false,
-      error: `Failed to get auth token using refresh token: ${response.statusText}`,
+      error: `Failed to get auth token using refresh token: ${
+        data!.error_description || data!.error || response.statusText
+      }`,
     };
   }
 
-  const data = await response.json();
   const calendarEmail = (jwt.decode(data.id_token) as JwtPayload)?.email;
 
   await storeCalendarTokens({
     calendarEmail,
     accessToken: data.access_token,
+    // if a new refresh token is returned, use that, otherwise use the old one
     refreshToken: data.refresh_token || refreshToken,
   });
 

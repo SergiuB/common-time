@@ -22,12 +22,12 @@ import {
 import debounce from "lodash/debounce";
 
 interface CalendarConfigurationCardProps {
-  calendarsByEmail: { email: string; calendars: CalendarData[] }[];
+  calendarsByAccountEmail: { email: string; calendars: CalendarData[] }[];
   calendarIds: string[];
 }
 
 export const CheckForConflictsCard = ({
-  calendarsByEmail,
+  calendarsByAccountEmail,
   calendarIds,
 }: CalendarConfigurationCardProps) => {
   const [selectedCalendarIds, setSelectedCalendarIds] =
@@ -57,9 +57,9 @@ export const CheckForConflictsCard = ({
     debouncedSetCalendarIdsForCheckConflicts(selectedCalendarIds);
   }, [selectedCalendarIds, debouncedSetCalendarIdsForCheckConflicts]);
 
-  const moreThanOneAccount = calendarsByEmail.length > 1;
+  const moreThanOneAccount = calendarsByAccountEmail.length > 1;
   return (
-    <Card className="max-w-xl">
+    <Card>
       <CardHeader>
         <CardTitle>Check for conflicts</CardTitle>
         <CardDescription>
@@ -68,7 +68,7 @@ export const CheckForConflictsCard = ({
       </CardHeader>
       <Separator />
       <CardContent className="flex flex-col gap-4 pt-4">
-        {calendarsByEmail.map(({ email, calendars }) => (
+        {calendarsByAccountEmail.map(({ email, calendars }) => (
           <div key={email}>
             {moreThanOneAccount && (
               <p className="text-small-regular text-neutral-500">{email}</p>

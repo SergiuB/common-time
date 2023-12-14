@@ -382,7 +382,7 @@ export const getCalendarTokens = withCurrentUser(
   },
 );
 
-export const getAllCalendarEmails = withCurrentUser(
+export const getAllCalendarAccountEmails = withCurrentUser(
   async (user: UserDocument) => {
     try {
       if (!user.calendarTokens) return [];

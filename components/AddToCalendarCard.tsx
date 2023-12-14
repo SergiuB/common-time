@@ -18,22 +18,25 @@ import { CalendarData, getCalendarUniqueId } from "@/lib/types";
 import { setCalendarIdForAdd } from "@/lib/actions/user.actions";
 
 interface CalendarConfigurationCardProps {
-  calendarsByEmail: { email: string; calendars: CalendarData[] }[];
+  calendarsByAccountEmail: {
+    email: string;
+    calendars: CalendarData[];
+  }[];
   calendarId: string;
 }
 
 export const AddToCalendarCard = ({
-  calendarsByEmail,
+  calendarsByAccountEmail,
   calendarId,
 }: CalendarConfigurationCardProps) => {
   const handleCalendarChange = useCallback((calendarId: string) => {
     setCalendarIdForAdd(calendarId);
   }, []);
 
-  const moreThanOneAccount = calendarsByEmail.length > 1;
+  const moreThanOneAccount = calendarsByAccountEmail.length > 1;
 
   return (
-    <Card className="max-w-xl">
+    <Card>
       <CardHeader>
         <CardTitle>Add to calendar</CardTitle>
         <CardDescription>
@@ -46,7 +49,7 @@ export const AddToCalendarCard = ({
           defaultValue={calendarId || "none"}
           onValueChange={handleCalendarChange}
         >
-          {calendarsByEmail.map(({ email, calendars }) => (
+          {calendarsByAccountEmail.map(({ email, calendars }) => (
             <div key={email}>
               {moreThanOneAccount && (
                 <p className="text-small-regular text-neutral-500">{email}</p>

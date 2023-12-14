@@ -1,56 +1,84 @@
 import {
-  getAllCalendarEmails,
+  getAllCalendarAccountEmails,
   getCalendarIdForAdd,
   getCalendarIdsForCheckConflicts,
 } from "@/lib/actions/user.actions";
-import { Plus, Trash } from "lucide-react";
-import Link from "next/link";
 import { getCalendars } from "@/lib/actions/calendar.actions";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
 import { CalendarAccountsCard } from "@/components/CalendarAccountsCard";
 import { AddToCalendarCard } from "@/components/AddToCalendarCard";
 import { CheckForConflictsCard } from "@/components/CheckForConflictsCard";
+import { CalendarData } from "@/lib/types";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 const Page = async () => {
-  const calendarEmails = await getAllCalendarEmails();
+  const accountEmails = await getAllCalendarAccountEmails();
 
-  const calendarsPromises = calendarEmails.map(getCalendars);
+  const calendarsPromises = accountEmails.map(async (email) => {
+    try {
+      return await getCalendars(email);
+    } catch (error) {
+      console.error(error);
+      return "failed_auth";
+    }
+  });
 
-  const calendars = await Promise.all(calendarsPromises);
+  const calendarsForAllAccounts = await Promise.all(calendarsPromises);
 
-  const calendarsByEmail = calendarEmails.map((email, index) => ({
-    email,
-    calendars: calendars[index],
-  }));
+  const accountData = accountEmails.map((email, index) => {
+    const calendars = calendarsForAllAccounts[index];
+    if (calendars === "failed_auth") {
+      return {
+        email,
+        failedAuth: true,
+      };
+    }
+    return {
+      email,
+      calendars,
+      failedAuth: false,
+    };
+  });
+
+  const hasAccountsWithFailedAuth = accountData.some(
+    ({ failedAuth }) => failedAuth,
+  );
+
+  const validAccountData = accountData.filter(
+    ({ failedAuth, calendars }) => !failedAuth && calendars?.length,
+  ) as {
+    email: string;
+    calendars: CalendarData[];
+  }[];
 
   const calendarIdForAdd = await getCalendarIdForAdd();
   const calendarIdsForCheckConflicts = await getCalendarIdsForCheckConflicts();
 
   return (
-    <section className="flex flex-col gap-8">
-      <CalendarAccountsCard accountEmails={calendarEmails} />
+    <section className="flex flex-col gap-8 max-w-xl">
+      <CalendarAccountsCard accountData={accountData} />
+      {hasAccountsWithFailedAuth ? (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Heads up!</AlertTitle>
+          <AlertDescription>
+            You have accounts with failed authentication/authorization. Please
+            remove or reauth them.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <>
+          <AddToCalendarCard
+            calendarsByAccountEmail={validAccountData}
+            calendarId={calendarIdForAdd}
+          />
 
-      <AddToCalendarCard
-        calendarsByEmail={calendarsByEmail}
-        calendarId={calendarIdForAdd}
-      />
-
-      <CheckForConflictsCard
-        calendarsByEmail={calendarsByEmail}
-        calendarIds={calendarIdsForCheckConflicts}
-      />
+          <CheckForConflictsCard
+            calendarsByAccountEmail={validAccountData}
+            calendarIds={calendarIdsForCheckConflicts}
+          />
+        </>
+      )}
     </section>
   );
 };

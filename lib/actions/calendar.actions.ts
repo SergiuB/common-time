@@ -36,6 +36,9 @@ function fetchWithToken<
     if (data.error && data.error.code === 401) {
       throw new Error("UNAUTHENTICATED");
     }
+    if (data.error && data.error.code === 403) {
+      throw new Error(data.error.message || data.error.status || "Forbidden");
+    }
 
     return transformFn(data);
   };

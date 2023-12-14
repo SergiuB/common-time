@@ -18,6 +18,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { removeCalendarTokens } from "@/lib/actions/user.actions";
+import { CalendarData } from "@/lib/types";
 
 const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const REDIRECT_URI = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI; // e.g., 'http://localhost:3000/api/auth/callback'
@@ -29,15 +30,18 @@ const GOOGLE_OAUTH_FULL_URL = `${GOOGLE_OAUTH_URL}?response_type=code&client_id=
 )}&scope=${encodeURIComponent(SCOPES)}&access_type=offline&prompt=consent`;
 
 interface CalendarAccountsCardProps {
-  accountEmails: string[];
+  accountData: {
+    email: string;
+    failedAuth: boolean;
+  }[];
 }
 
 export const CalendarAccountsCard = ({
-  accountEmails,
+  accountData,
 }: CalendarAccountsCardProps) => {
   return (
     <TooltipProvider>
-      <Card className="max-w-xl">
+      <Card>
         <CardHeader className="p-4 grid grid-cols-2 items-center">
           <CardTitle>Google Calendar Accounts</CardTitle>
           <Link
@@ -50,12 +54,28 @@ export const CalendarAccountsCard = ({
         </CardHeader>
         <Separator />
         <CardContent className="flex flex-col gap-4 p-4">
-          {accountEmails.map((email) => (
+          {accountData.map(({ email, failedAuth }) => (
             <div
               key={email}
               className="flex items-center justify-between gap-4"
             >
-              <CardDescription key={email}>{email}</CardDescription>
+              {failedAuth ? (
+                <>
+                  <p className="text-small-regular text-red-500">
+                    {`${email} (auth failed)`}
+                  </p>
+                  <Link
+                    href={GOOGLE_OAUTH_FULL_URL}
+                    className={`flex align-middle rounded-3xl ${buttonVariants({
+                      variant: "secondary",
+                    })}`}
+                  >
+                    <p className="text-small-regular">Reauth</p>
+                  </Link>
+                </>
+              ) : (
+                <p className="text-small-regular">{email}</p>
+              )}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
