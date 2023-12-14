@@ -50,7 +50,7 @@ export interface User {
   // we serialize the token map due to Mongoose poor support for Maps
   calendarTokens: string;
   calendars: {
-    calendarIdForAdd: string;
+    calendarIdForAdd?: string;
     calendarIdsForCheckConflicts: string[];
   };
 }

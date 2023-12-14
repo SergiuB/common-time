@@ -354,12 +354,26 @@ export const storeCalendarTokens = withCurrentUser(
   },
 );
 
-export const removeCalendarTokens = withCurrentUser(
+export const removeCalendarAccount = withCurrentUser(
   async (user: UserDocument, calendarEmail: string) => {
     try {
+      // remove tokens
       let tokens = user.calendarTokens ? JSON.parse(user.calendarTokens) : {};
       delete tokens[calendarEmail];
       user.calendarTokens = JSON.stringify(tokens);
+
+      // remove stale calendars
+      if (user.calendars) {
+        user.calendars.calendarIdsForCheckConflicts = (
+          user.calendars.calendarIdsForCheckConflicts || []
+        ).filter((id) => !id.startsWith(calendarEmail));
+
+        user.calendars.calendarIdForAdd = (
+          user.calendars.calendarIdForAdd || ""
+        ).startsWith(calendarEmail)
+          ? undefined
+          : user.calendars?.calendarIdForAdd;
+      }
 
       await user.save();
       revalidatePath("/calendars");

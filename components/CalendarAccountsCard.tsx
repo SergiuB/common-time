@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { removeCalendarTokens } from "@/lib/actions/user.actions";
+import { removeCalendarAccount } from "@/lib/actions/user.actions";
 import { CalendarData } from "@/lib/types";
 
 const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
@@ -83,7 +83,7 @@ export const CalendarAccountsCard = ({
                     size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
-                      removeCalendarTokens(email);
+                      removeCalendarAccount(email);
                     }}
                   >
                     <Trash className="h-4 w-4" />
