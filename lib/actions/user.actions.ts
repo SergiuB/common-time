@@ -59,12 +59,25 @@ export async function createUserIfNotExists(): Promise<User | null> {
       // user.schedules = user.schedules || [];
       user.schedules.push(defaultSchedule);
 
+      const fullName = clerkUser.firstName + " " + clerkUser.lastName;
+
+      user.profile = {
+        fullName,
+        email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
+        link: generateValidLink(fullName),
+      };
+
       await user.save();
     }
     return user;
   } catch (error: any) {
     throw new Error(`Failed to create/update user: ${error.message}`);
   }
+}
+
+function generateValidLink(fullName: string): string {
+  // TODO: check if no conflict with existing links and generate a unique one
+  return fullName.replace(/ /g, "_").toLowerCase();
 }
 
 export async function fetchUser(authId: string) {

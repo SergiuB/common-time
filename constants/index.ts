@@ -1,10 +1,8 @@
 import colors from "tailwindcss/colors";
 
-interface Props {
-  userId?: string | null;
-}
+interface Props {}
 
-export const generateSidebarLinks = ({ userId }: Props) => [
+export const generateSidebarLinks = () => [
   {
     imgURL: "/assets/event-types.svg",
     route: "/event-types",
@@ -22,7 +20,7 @@ export const generateSidebarLinks = ({ userId }: Props) => [
   },
   {
     imgURL: "/assets/profile.svg",
-    route: `/profile/${userId}`,
+    route: `/profile`,
     label: "Profile",
   },
 ];

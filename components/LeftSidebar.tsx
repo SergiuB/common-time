@@ -1,7 +1,6 @@
 "use client";
 
 import { generateSidebarLinks } from "@/constants";
-import { SignOutButton, SignedIn, useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,11 +11,9 @@ import { Pacifico } from "next/font/google";
 const pacifico = Pacifico({ weight: "400", subsets: ["latin"] });
 
 function LeftSidebar() {
-  const router = useRouter();
   const pathname = usePathname();
-  const { userId } = useAuth();
 
-  const sidebarLinks = generateSidebarLinks({ userId });
+  const sidebarLinks = generateSidebarLinks();
 
   return (
     <section className="custom-scrollbar leftsidebar ">

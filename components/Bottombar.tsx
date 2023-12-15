@@ -8,8 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 
 function Bottombar() {
   const pathname = usePathname();
-  const { userId } = useAuth();
-  const sidebarLinks = generateSidebarLinks({ userId });
+  const sidebarLinks = generateSidebarLinks();
 
   return (
     <section className="bottombar">

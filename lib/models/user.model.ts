@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema<User>({
     calendarIdForAdd: String,
     calendarIdsForCheckConflicts: [String],
   },
+  profile: {
+    fullName: { type: String, required: true },
+    email: { type: String, required: true },
+    link: { type: String, required: true },
+  },
 });
 
 const User =

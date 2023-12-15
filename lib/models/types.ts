@@ -53,6 +53,11 @@ export interface User {
     calendarIdForAdd?: string;
     calendarIdsForCheckConflicts: string[];
   };
+  profile: {
+    fullName: string;
+    email: string;
+    link: string;
+  };
 }
 
 export type Day =
