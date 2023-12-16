@@ -468,6 +468,24 @@ export const getCalendarIdsForCheckConflicts = withCurrentUser(
   },
 );
 
+export const saveProfile = withCurrentUser(
+  async (user: UserDocument, { fullName, link, email }: User["profile"]) => {
+    try {
+      user.profile = {
+        fullName,
+        link,
+        email,
+      };
+
+      await user.save();
+
+      revalidatePath("/profile");
+    } catch (error: any) {
+      throw new Error(`Error saving profile: ${error.message}`);
+    }
+  },
+);
+
 function withCurrentUser<
   T extends (user: UserDocument, ...args: any[]) => Promise<any>,
 >(fn: T) {

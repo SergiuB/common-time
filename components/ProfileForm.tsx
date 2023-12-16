@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ProfileValidation } from "@/lib/validations/profile";
+import { saveProfile } from "@/lib/actions/user.actions";
 
 interface ProfileFormProps {
   fullName: string;
@@ -33,13 +34,16 @@ export const ProfileForm = ({ fullName, email, link }: ProfileFormProps) => {
     },
   });
 
-  const onSubmit = async (values: any) => {
-    console.log(values);
+  const onSubmit = async (values: ProfileFormProps) => {
+    await saveProfile(values);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 max-w-xl"
+      >
         <FormField
           control={form.control}
           name="fullName"
@@ -80,7 +84,7 @@ export const ProfileForm = ({ fullName, email, link }: ProfileFormProps) => {
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        {form.formState.isDirty && <Button type="submit">Save Changes</Button>}
       </form>
     </Form>
   );
