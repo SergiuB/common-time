@@ -15,6 +15,7 @@ import { RestParameters, memoize } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
 import { defaultEndMin, defaultStartMin } from "@/constants";
+import { getBusyIntervals } from "./calendar.actions";
 
 type UserDocument = Document<unknown, {}, User> &
   User &
@@ -468,6 +469,16 @@ export const getCalendarIdsForCheckConflicts = withCurrentUser(
   },
 );
 
+export const getUserCalendarIdsForCheckConflicts = async (
+  user: UserDocument,
+) => {
+  try {
+    return user.calendars?.calendarIdsForCheckConflicts || [];
+  } catch (error: any) {
+    throw new Error(`Error getting selected calendar ids: ${error.message}`);
+  }
+};
+
 export const saveProfile = withCurrentUser(
   async (user: UserDocument, { fullName, link, email }: User["profile"]) => {
     try {
@@ -485,6 +496,50 @@ export const saveProfile = withCurrentUser(
     }
   },
 );
+
+export const getUserDataFromLink = async (link: string) => {
+  try {
+    await connectToDb();
+    const user = await UserModel.findOne({ "profile.link": link });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const busyIntervals = await getAllBusyIntevals(user);
+
+    return {
+      profile: user.profile,
+      busyIntervals,
+    };
+  } catch (error: any) {
+    throw new Error(`Failed to get user data from link: ${error.message}`);
+  }
+};
+
+// returns a list of busy intervals for all calendars that are selected for conflict checking
+const getAllBusyIntevals = async (user: UserDocument) => {
+  const calendarIds = await getUserCalendarIdsForCheckConflicts(user);
+
+  const groupedCalendarIds = calendarIds.reduce(
+    (acc, fullId) => {
+      const [email, id] = fullId.split("::");
+      const entry = acc.find(([key]) => key === email);
+      if (entry) {
+        entry[1].push(id);
+      } else {
+        acc.push([email, [id]]);
+      }
+      return acc;
+    },
+    [] as Array<[string, string[]]>,
+  );
+
+  const promises = groupedCalendarIds.map(([email, ids]) =>
+    getBusyIntervals(email, ids),
+  );
+
+  return (await Promise.all(promises)).flat();
+};
 
 function withCurrentUser<
   T extends (user: UserDocument, ...args: any[]) => Promise<any>,

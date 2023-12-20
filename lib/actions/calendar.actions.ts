@@ -6,6 +6,37 @@ import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
 import { CalendarData } from "../types";
 
+// https://developers.google.com/calendar/api/v3/reference/freebusy/query?apix_params=%7B%22resource%22%3A%7B%22timeMin%22%3A%222023-12-17T00%3A00%3A00Z%22%2C%22timeMax%22%3A%222023-12-20T00%3A00%3A00Z%22%2C%22items%22%3A%5B%7B%22id%22%3A%22e317361c59870053e474d7483a7babc03a78895fc46d2499e23e769407aeca23%40group.calendar.google.com%22%7D%5D%7D%7D
+// returns busy intervals for a list of calendars
+const fetchBusyIntervals = fetchWithToken(
+  (accessToken: string, calendarIds: string[], daysInFuture = 21) =>
+    fetch("https://www.googleapis.com/calendar/v3/freeBusy", {
+      cache: "no-cache",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        timeMin: new Date().toISOString(),
+        timeMax: new Date(
+          Date.now() + 1000 * 60 * 60 * 24 * daysInFuture,
+        ).toISOString(),
+        items: calendarIds.map((id) => ({ id })),
+      }),
+    }),
+  (data: {
+    calendars: Record<string, { busy: { start: string; end: string }[] }>;
+  }) =>
+    Object.values(data.calendars)
+      .flatMap((calendar) => calendar.busy)
+      .sort(
+        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+      ),
+);
+
+export const getBusyIntervals = withCalendarTokens(fetchBusyIntervals);
+
 const fetchCalendarList = fetchWithToken(
   (accessToken: string) =>
     fetch("https://www.googleapis.com/calendar/v3/users/me/calendarList", {

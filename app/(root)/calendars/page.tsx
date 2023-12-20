@@ -36,7 +36,8 @@ const Page = async () => {
 
   const calendarsPromises = accountEmails.map(async (email) => {
     try {
-      return await getCalendars(email);
+      const calendarData = await getCalendars(email);
+      return calendarData;
     } catch (error) {
       console.error(error);
       return "failed_auth";
