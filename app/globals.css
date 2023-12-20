@@ -3,15 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  /* main */
-  .main-container {
-    @apply relative flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10;
-  }
-
-  .main-container_top-bar {
-    @apply absolute top-0 left-0 right-0 flex items-center bg-white p-4 border-b;
-  }
-
   /* Head Text */
   .head-text {
     @apply text-heading2-bold text-gray-50;
