@@ -35,7 +35,7 @@ const Layout = async ({ children }: React.PropsWithChildren) => {
         <Topbar />
         <main className="flex flex-row">
           <LeftSidebar />
-          <section className="main-container ">
+          <section className="relative flex min-h-screen flex-1 flex-col items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10; ">
             <div className="w-full max-x-4xl">{children}</div>
           </section>
         </main>

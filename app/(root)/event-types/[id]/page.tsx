@@ -1,10 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
 import { currentUser } from "@clerk/nextjs";
 
 import EventTypeForm from "@/components/EventTypeForm";
-import Link from "next/link";
 import { fetchEventType } from "@/lib/actions/user.actions";
+import { EventTypeTopBar } from "@/components/EventTypeTopBar";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const user = await currentUser();
@@ -15,19 +13,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
 
   return (
     <section className="flex flex-col items-center">
-      <div className="main-container_top-bar">
-        <Button variant="outline" className="rounded-3xl">
-          <Link href="/event-types">
-            <div className="flex items-center">
-              <ChevronLeft className="mr-2 h-4 w-4" />
-              Back
-            </div>
-          </Link>
-        </Button>
-        <h1 className="flex-1 text-center text-heading3 text-neutral-600 pr-20">
-          Edit Event Type
-        </h1>
-      </div>
+      <EventTypeTopBar title="Edit Event Type" />
 
       <EventTypeForm
         action="update"
