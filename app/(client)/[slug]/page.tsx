@@ -1,3 +1,5 @@
+import { ClientCalendar } from "@/components/ClientCalendar";
+import { Card, CardContent } from "@/components/ui/card";
 import { getUserDataFromLink } from "@/lib/actions/user.actions";
 import React from "react";
 
@@ -13,7 +15,13 @@ const BookingPage = async ({ params: { slug } }: Props) => {
     // TOFO: 404 page
     return <div>Not found</div>;
   }
-  return <div>{profile.fullName}</div>;
+  return (
+    <Card>
+      <CardContent className="pt-4">
+        <ClientCalendar busyIntervals={busyIntervals} />
+      </CardContent>
+    </Card>
+  );
 };
 
 export default BookingPage;

@@ -30,9 +30,10 @@ const fetchBusyIntervals = fetchWithToken(
   }) =>
     Object.values(data.calendars)
       .flatMap((calendar) => calendar.busy)
-      .sort(
-        (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
-      ),
+      .map(({ start, end }) => ({
+        start: new Date(start).getTime(),
+        end: new Date(end).getTime(),
+      })),
 );
 
 export const getBusyIntervals = withCalendarTokens(fetchBusyIntervals);
