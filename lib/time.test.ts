@@ -1,6 +1,6 @@
 import {
   intervalsIntersect,
-  splitInterval,
+  extractSubintervals,
   subtractBusyIntervals,
   subtractTimeIntervals,
 } from "./time";
@@ -125,36 +125,45 @@ describe("intervalsIntersect", () => {
   });
 });
 
-describe("splitInterval", () => {
-  it("should correctly split interval with remainder", () => {
-    const result = splitInterval(0, 11, 2);
+describe("extractSubintervals", () => {
+  it("should correctly extract subintervals with remainder", () => {
+    const result = extractSubintervals(0, 11, 2);
     expect(result).toEqual([
       [0, 2],
+      [1, 3],
       [2, 4],
+      [3, 5],
       [4, 6],
+      [5, 7],
       [6, 8],
+      [7, 9],
       [8, 10],
+      [9, 11],
     ]);
   });
 
-  it("should correctly split interval without remainder", () => {
-    const result = splitInterval(0, 10, 2);
+  it("should correctly extract subintervals without remainder", () => {
+    const result = extractSubintervals(0, 10, 2);
     expect(result).toEqual([
       [0, 2],
+      [1, 3],
       [2, 4],
+      [3, 5],
       [4, 6],
+      [5, 7],
       [6, 8],
+      [7, 9],
       [8, 10],
     ]);
   });
 
   it("should return empty for too small interval", () => {
-    const result = splitInterval(0, 1, 2);
+    const result = extractSubintervals(0, 1, 2);
     expect(result).toEqual([]);
   });
 
   it("should return original interval, if subinterval length is exactly interval length", () => {
-    const result = splitInterval(0, 1, 1);
+    const result = extractSubintervals(0, 1, 1);
     expect(result).toEqual([[0, 1]]);
   });
 });

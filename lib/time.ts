@@ -86,7 +86,7 @@ export function intervalsIntersect(
   );
 }
 
-export function splitInterval(
+export function extractSubintervals(
   start: number,
   end: number,
   subIntervalLength: number,
@@ -105,7 +105,7 @@ export function splitInterval(
 
   while (currentStart + subIntervalLength <= end) {
     result.push([currentStart, currentStart + subIntervalLength]);
-    currentStart += subIntervalLength;
+    currentStart += 1;
   }
   return result;
 }
