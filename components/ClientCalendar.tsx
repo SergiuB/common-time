@@ -33,7 +33,7 @@ export const ClientCalendar = ({ busyIntervals }: ClientCalendarProps) => {
         }
         const freeInDay = subtractBusyIntervals(start, end, busyIntervals);
 
-        const busyDay = !freeInDay.length;
+        const busyDay = !freeInDay.length || end < Date.now();
         return (
           <div
             key={start}
