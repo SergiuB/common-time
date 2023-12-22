@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { generateTimesInDay, minutesToTime, timeToMinutes } from "@/lib/utils";
+import { generateTimesInDay, minutesToTime, timeToMinutes } from "@/lib/time";
 
 interface Props {
   minutes: number;

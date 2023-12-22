@@ -1,51 +1,113 @@
 "use client";
 
 import { days } from "@/constants";
-import { subtractBusyIntervals } from "@/lib/time";
+import { extractSubintervals, subtractBusyIntervals } from "@/lib/time";
+import { useState } from "react";
+import cn from "classnames";
+import { minutesToTime } from "@/lib/time";
 
 interface ClientCalendarProps {
+  eventDurationMin: number;
   busyIntervals: {
     start: number;
     end: number;
   }[];
 }
 
-export const ClientCalendar = ({ busyIntervals }: ClientCalendarProps) => {
+export const ClientCalendar = ({
+  busyIntervals,
+  eventDurationMin = 60,
+}: ClientCalendarProps) => {
   const calendarDays = getFutureDays(21);
+
+  const calendarData = calendarDays.map(({ start, end }) => {
+    const startDate = new Date(start);
+    const toMinutes = ([start, end]: [number, number]) => [
+      start / 1000 / 60,
+      end / 1000 / 60,
+    ];
+    const freeDayIntervals = subtractBusyIntervals(
+      start,
+      end,
+      busyIntervals,
+    ).map(toMinutes);
+
+    const freeDaySlots: [number, number][] = freeDayIntervals.reduce(
+      (acc, [intervalStartMin, intervalEndMin]) => {
+        const slots = extractSubintervals(
+          intervalStartMin,
+          intervalEndMin,
+          eventDurationMin,
+          30, // TODO: make this configurable
+        );
+        return [...acc, ...slots];
+      },
+      [] as [number, number][],
+    );
+
+    const isBusyDay = !freeDayIntervals.length || end < Date.now();
+    const isToday = startDate.getDate() === new Date().getDate();
+
+    return {
+      isToday,
+      isBusyDay,
+      startDate,
+      freeDaySlots,
+    };
+  });
+
+  const firstFreeDay = calendarData.find(({ isBusyDay }) => !isBusyDay)
+    ?.startDate;
+
+  const [selectedDate, setSelectedDate] = useState(firstFreeDay);
 
   return (
     <div className="inline-grid grid-flow-row grid-cols-7 gap-0">
       {days.map((day) => (
         <div
           key={day}
-          className="w-16 col-span-1 text-small-regular text-neutral-500 justify-center items-center text-center"
+          className="w-16 col-span-1 text-small-regular text-neutral-500 justify-center items-center text-center mb-1"
         >
           {day.slice(0, 3).toUpperCase()}
         </div>
       ))}
-      {calendarDays.map(({ start, end }) => {
-        const startDate = new Date(start);
-        if (startDate.getDate() === 6) {
-          console.log(startDate, start);
-        }
-        if (start === 1704492000000) {
-          console.log(start);
-        }
-        const freeInDay = subtractBusyIntervals(start, end, busyIntervals);
+      {calendarData.map(({ isToday, isBusyDay, startDate, freeDaySlots }) => {
+        const isSelected =
+          selectedDate && startDate.getDate() === selectedDate.getDate();
 
-        const busyDay = !freeInDay.length || end < Date.now();
         return (
           <div
-            key={start}
-            className="col-span-1 w-16 h-16 flex flex-col justify-center items-center"
+            key={startDate.getTime()}
+            className={cn(
+              "col-span-1 w-16 h-16 flex flex-col items-center pt-3 rounded-full text-small-regular",
+              {
+                "text-neutral-300": isBusyDay,
+                "bg-primary-500 text-white": isSelected,
+                "cursor-pointer": !isBusyDay && !isSelected,
+              },
+            )}
+            onClick={() => {
+              if (isBusyDay || isSelected) return;
+              setSelectedDate(startDate);
+              const startDateMin = startDate.getTime() / 1000 / 60;
+              console.log(
+                freeDaySlots.map(([start, end]) => {
+                  return [
+                    minutesToTime(start - startDateMin),
+                    minutesToTime(end - startDateMin),
+                  ];
+                }),
+              );
+            }}
           >
-            <div
-              className={`text-small-regular ${
-                busyDay ? "text-neutral-300" : "text-gray-800"
-              }`}
-            >
-              <p>{startDate.getDate()}</p>
-            </div>
+            {isToday ? (
+              <>
+                <p className="text-x-small">TODAY</p>
+                <p>{startDate.getDate()}</p>
+              </>
+            ) : (
+              <p className="mt-2.5">{startDate.getDate()}</p>
+            )}
           </div>
         );
       })}

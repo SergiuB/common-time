@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatMinutes, minutesFromString } from "@/lib/utils";
+import { formatMinutes, minutesFromString } from "@/lib/time";
 import { useAuth } from "@clerk/nextjs";
 import { colorVariants, eventColors } from "@/constants";
 import { createEventType, updateEventType } from "@/lib/actions/user.actions";

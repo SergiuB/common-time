@@ -18,7 +18,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "./ui/tooltip";
-import { formatMinutes } from "@/lib/utils";
+import { formatMinutes } from "@/lib/time";
 import { colorVariants, eventColors } from "@/constants";
 import {
   deleteEventType,

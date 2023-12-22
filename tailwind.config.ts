@@ -193,6 +193,12 @@ module.exports = {
           fontWeight: "600",
         },
       ],
+      "x-small": [
+        "7px",
+        {
+          lineHeight: "10px",
+        },
+      ],
     },
     extend: {
       colors: {
