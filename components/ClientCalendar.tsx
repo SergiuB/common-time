@@ -12,7 +12,6 @@ interface ClientCalendarProps {
 
 export const ClientCalendar = ({ busyIntervals }: ClientCalendarProps) => {
   const calendarDays = getFutureDays(21);
-  const sortedBusyIntervals = busyIntervals.sort((a, b) => a.start - b.start);
 
   return (
     <div className="inline-grid grid-flow-row grid-cols-7 gap-0">
@@ -32,11 +31,8 @@ export const ClientCalendar = ({ busyIntervals }: ClientCalendarProps) => {
         if (start === 1704492000000) {
           console.log(start);
         }
-        const freeInDay = subtractBusyIntervals(
-          start,
-          end,
-          sortedBusyIntervals,
-        );
+        const freeInDay = subtractBusyIntervals(start, end, busyIntervals);
+
         const busyDay = !freeInDay.length;
         return (
           <div
@@ -48,8 +44,7 @@ export const ClientCalendar = ({ busyIntervals }: ClientCalendarProps) => {
                 busyDay ? "text-neutral-300" : "text-gray-800"
               }`}
             >
-              {startDate.getDate()}
-              {/* {freeInDay} */}
+              <p>{startDate.getDate()}</p>
             </div>
           </div>
         );
