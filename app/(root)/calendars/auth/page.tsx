@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { storeTokensUsingAuthCode } from "@/lib/actions/auth.actions";
+import { getTokensUsingAuthCode } from "@/lib/actions/auth.actions";
+import { storeCalendarTokens } from "@/lib/actions/user.actions";
 
 interface PageProps {
   searchParams: {
@@ -15,8 +16,9 @@ const Page = ({ searchParams }: PageProps) => {
 
   useEffect(() => {
     if (searchParams?.code) {
-      storeTokensUsingAuthCode(searchParams.code);
-      router.push("/calendars");
+      getTokensUsingAuthCode(searchParams.code)
+        .then(storeCalendarTokens)
+        .then(() => router.push("/calendars"));
     }
   }, [router, searchParams?.code]);
 

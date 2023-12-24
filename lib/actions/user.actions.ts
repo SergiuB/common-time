@@ -15,9 +15,10 @@ import { RestParameters, memoize } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
 import { defaultEndMin, defaultStartMin } from "@/constants";
-import { getBusyIntervals } from "./calendar.actions";
+import { getBusyIntervals, getUserBusyIntervals } from "./calendar.actions";
+import { TokenData } from "./types";
 
-type UserDocument = Document<unknown, {}, User> &
+export type UserDocument = Document<unknown, {}, User> &
   User &
   Required<{
     _id: Schema.Types.ObjectId;
@@ -338,53 +339,45 @@ export const updateSchedule = withCurrentUser(
   },
 );
 
-export const storeCalendarTokens = withCurrentUser(
-  async (
-    user: UserDocument,
-    {
-      calendarEmail,
+export const storeUserCalendarTokens = async (
+  user: UserDocument,
+  { calendarAccountEmail, accessToken, refreshToken }: TokenData,
+) => {
+  try {
+    let existingTokens = user.calendarTokens
+      ? JSON.parse(user.calendarTokens)
+      : {};
+    existingTokens[calendarAccountEmail] = {
       accessToken,
       refreshToken,
-    }: {
-      calendarEmail: string;
-      accessToken: string;
-      refreshToken: string;
-    },
-  ) => {
-    try {
-      let existingTokens = user.calendarTokens
-        ? JSON.parse(user.calendarTokens)
-        : {};
-      existingTokens[calendarEmail] = {
-        accessToken,
-        refreshToken,
-      };
-      user.calendarTokens = JSON.stringify(existingTokens);
+    };
+    user.calendarTokens = JSON.stringify(existingTokens);
 
-      await user.save();
-    } catch (error: any) {
-      throw new Error(`Error storing tokens: ${error.message}`);
-    }
-  },
-);
+    await user.save();
+  } catch (error: any) {
+    throw new Error(`Error storing tokens: ${error.message}`);
+  }
+};
+
+export const storeCalendarTokens = withCurrentUser(storeUserCalendarTokens);
 
 export const removeCalendarAccount = withCurrentUser(
-  async (user: UserDocument, calendarEmail: string) => {
+  async (user: UserDocument, calendarAccountEmail: string) => {
     try {
       // remove tokens
       let tokens = user.calendarTokens ? JSON.parse(user.calendarTokens) : {};
-      delete tokens[calendarEmail];
+      delete tokens[calendarAccountEmail];
       user.calendarTokens = JSON.stringify(tokens);
 
       // remove stale calendars
       if (user.calendars) {
         user.calendars.calendarIdsForCheckConflicts = (
           user.calendars.calendarIdsForCheckConflicts || []
-        ).filter((id) => !id.startsWith(calendarEmail));
+        ).filter((id) => !id.startsWith(calendarAccountEmail));
 
         user.calendars.calendarIdForAdd = (
           user.calendars.calendarIdForAdd || ""
-        ).startsWith(calendarEmail)
+        ).startsWith(calendarAccountEmail)
           ? undefined
           : user.calendars?.calendarIdForAdd;
       }
@@ -397,18 +390,21 @@ export const removeCalendarAccount = withCurrentUser(
   },
 );
 
-export const getCalendarTokens = withCurrentUser(
-  async (user: UserDocument, calendarEmail: string) => {
-    if (!user.calendarTokens) {
-      throw new Error("No tokens found");
-    }
-    const tokens = JSON.parse(user.calendarTokens)[calendarEmail];
-    if (!tokens) {
-      throw new Error(`No tokens found for ${calendarEmail}`);
-    }
-    return tokens;
-  },
-);
+export const getUserCalendarTokens = async (
+  user: UserDocument,
+  calendarAccountEmail: string,
+) => {
+  if (!user.calendarTokens) {
+    throw new Error("No tokens found");
+  }
+  const tokens = JSON.parse(user.calendarTokens)[calendarAccountEmail];
+  if (!tokens) {
+    throw new Error(`No tokens found for ${calendarAccountEmail}`);
+  }
+  return tokens;
+};
+
+export const getCalendarTokens = withCurrentUser(getUserCalendarTokens);
 
 export const getAllCalendarAccountEmails = withCurrentUser(
   async (user: UserDocument) => {
@@ -535,7 +531,7 @@ const getAllBusyIntevals = async (user: UserDocument) => {
   );
 
   const promises = groupedCalendarIds.map(([email, ids]) =>
-    getBusyIntervals(email, ids),
+    getUserBusyIntervals(user, email, ids),
   );
 
   return (await Promise.all(promises)).flat();

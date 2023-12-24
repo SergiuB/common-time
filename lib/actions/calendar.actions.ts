@@ -1,7 +1,12 @@
 "use server";
 
-import { access } from "fs";
-import { getCalendarTokens } from "./user.actions";
+import {
+  UserDocument,
+  getCalendarTokens,
+  getUserCalendarTokens,
+  storeCalendarTokens,
+  storeUserCalendarTokens,
+} from "./user.actions";
 import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
 import { CalendarData } from "../types";
@@ -37,6 +42,7 @@ const fetchBusyIntervals = fetchWithToken(
 );
 
 export const getBusyIntervals = withCalendarTokens(fetchBusyIntervals);
+export const getUserBusyIntervals = withUserCalendarTokens(fetchBusyIntervals);
 
 const fetchCalendarList = fetchWithToken(
   (accessToken: string) =>
@@ -80,21 +86,56 @@ function withCalendarTokens<
   T extends (accessToken: string, ...args: any[]) => Promise<any>,
 >(fn: T) {
   return async (
-    calendarEmail: string,
+    calendarAccountEmail: string,
     ...args: RestParameters<T>
   ): Promise<Awaited<ReturnType<T>>> => {
     const { accessToken, refreshToken } =
-      await getCalendarTokens(calendarEmail);
+      await getCalendarTokens(calendarAccountEmail);
 
     try {
       return await fn(accessToken, ...args);
     } catch (error: any) {
       if (error.message === "UNAUTHENTICATED") {
         const newTokens = await getTokensUsingRefreshToken(refreshToken);
-        if (!newTokens.ok) {
-          // redirect to client auth flow
-          throw new Error(newTokens.error);
-        }
+
+        storeCalendarTokens({
+          calendarAccountEmail,
+          accessToken: newTokens.accessToken,
+          refreshToken: newTokens.refreshToken,
+        });
+
+        return await fn(newTokens.accessToken, ...args);
+      }
+
+      throw error;
+    }
+  };
+}
+
+function withUserCalendarTokens<
+  T extends (accessToken: string, ...args: any[]) => Promise<any>,
+>(fn: T) {
+  return async (
+    user: UserDocument,
+    calendarAccountEmail: string,
+    ...args: RestParameters<T>
+  ): Promise<Awaited<ReturnType<T>>> => {
+    const { accessToken, refreshToken } = await getUserCalendarTokens(
+      user,
+      calendarAccountEmail,
+    );
+
+    try {
+      return await fn(accessToken, ...args);
+    } catch (error: any) {
+      if (error.message === "UNAUTHENTICATED") {
+        const newTokens = await getTokensUsingRefreshToken(refreshToken);
+
+        storeUserCalendarTokens(user, {
+          calendarAccountEmail,
+          accessToken: newTokens.accessToken,
+          refreshToken: newTokens.refreshToken,
+        });
 
         return await fn(newTokens.accessToken, ...args);
       }

@@ -2,22 +2,10 @@
 
 import { memoize } from "../utils";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { storeCalendarTokens } from "./user.actions";
+import { TokenData } from "./types";
 
-type TokenResponse =
-  | {
-      ok: true;
-      accessToken: string;
-      refreshToken: string;
-      email: string;
-    }
-  | {
-      ok: false;
-      error: string;
-    };
-
-export const storeTokensUsingAuthCode = memoize(
-  async (authCode: string): Promise<void> => {
+export const getTokensUsingAuthCode = memoize(
+  async (authCode: string): Promise<TokenData> => {
     const response = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: {
@@ -41,19 +29,20 @@ export const storeTokensUsingAuthCode = memoize(
 
     const data = await response.json();
 
-    const calendarEmail = (jwt.decode(data.id_token) as JwtPayload)?.email;
+    const calendarAccountEmail = (jwt.decode(data.id_token) as JwtPayload)
+      ?.email;
 
-    await storeCalendarTokens({
-      calendarEmail,
+    return {
+      calendarAccountEmail,
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
-    });
+    };
   },
 );
 
 export const getTokensUsingRefreshToken = async (
   refreshToken: string,
-): Promise<TokenResponse> => {
+): Promise<TokenData> => {
   const response = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: {
@@ -72,27 +61,19 @@ export const getTokensUsingRefreshToken = async (
   const data = await response.json();
 
   if (!response.ok) {
-    return {
-      ok: false,
-      error: `Failed to get auth token using refresh token: ${
+    throw new Error(
+      `Failed to get auth token using refresh token: ${
         data!.error_description || data!.error || response.statusText
       }`,
-    };
+    );
   }
 
-  const calendarEmail = (jwt.decode(data.id_token) as JwtPayload)?.email;
-
-  await storeCalendarTokens({
-    calendarEmail,
-    accessToken: data.access_token,
-    // if a new refresh token is returned, use that, otherwise use the old one
-    refreshToken: data.refresh_token || refreshToken,
-  });
+  const calendarAccountEmail = (jwt.decode(data.id_token) as JwtPayload)?.email;
 
   return {
-    ok: true,
     accessToken: data.access_token,
+    // use the same refresh token if it's not provided
     refreshToken: data.refresh_token || refreshToken,
-    email: calendarEmail,
+    calendarAccountEmail,
   };
 };
