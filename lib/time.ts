@@ -164,3 +164,28 @@ export const generateTimesInDay = (gapMinutes: number) => {
   }
   return times;
 };
+
+export function getStartOfWeek(day: Date) {
+  const dayOfWeek = day.getDay(); // Day of the week (0 for Sunday, 1 for Monday, etc.)
+  const startOfWeek = new Date(day);
+
+  // If your week starts on Sunday, use `startOfWeek.setDate(today.getDate() - dayOfWeek);`
+  startOfWeek.setDate(day.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1)); // Set to Monday of the current week
+
+  return startOfWeek;
+}
+
+export function getFutureDays(day: Date, count: number) {
+  const futureDays = [];
+
+  for (let i = 0; i < count; i++) {
+    const date = new Date(day);
+    date.setDate(day.getDate() + i);
+    futureDays.push(date);
+  }
+
+  return futureDays.map((date) => ({
+    start: date.setHours(0, 0, 0, 0),
+    end: date.setHours(23, 59, 59, 999),
+  }));
+}
