@@ -1,7 +1,7 @@
 import { currentUser } from "@clerk/nextjs";
 
 import EventTypeForm from "@/components/EventTypeForm";
-import { fetchEventType } from "@/lib/actions/user.actions";
+import { fetchEventType, fetchSchedules } from "@/lib/actions/user.actions";
 import { EventTypeTopBar } from "@/components/EventTypeTopBar";
 
 const Page = async ({ params }: { params: { id: string } }) => {
@@ -10,6 +10,12 @@ const Page = async ({ params }: { params: { id: string } }) => {
     authId: user!.id,
     eventId: params.id,
   });
+  const schedules = (await fetchSchedules({ authId: user!.id })).map(
+    (schedule) => ({
+      name: schedule.name,
+      id: schedule._id!.toString(),
+    }),
+  );
 
   return (
     <section className="flex flex-col items-center">
@@ -28,6 +34,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
         dateRangeDays={eventType.dateRangeDays}
         beforeEventMin={eventType.beforeEventMin}
         afterEventMin={eventType.afterEventMin}
+        schedules={schedules}
       />
     </section>
   );

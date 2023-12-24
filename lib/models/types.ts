@@ -26,7 +26,7 @@ export interface EventType {
   durationMin: number;
   location: string;
   description: string;
-  scheduleId: mongoose.ObjectId;
+  scheduleId: string;
   link: string;
   color: Color;
   dateRangeDays: number;

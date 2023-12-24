@@ -10,4 +10,5 @@ export const EventTypeValidation = z.object({
   beforeEventMin: z.string().nonempty(),
   afterEventMin: z.string().nonempty(),
   link: z.string().nonempty(),
+  scheduleId: z.string().nonempty(),
 });

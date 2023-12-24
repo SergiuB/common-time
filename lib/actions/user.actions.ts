@@ -106,6 +106,7 @@ interface CreateOpts {
   dateRangeDays: number;
   beforeEventMin: number;
   afterEventMin: number;
+  scheduleId: string;
 }
 
 export async function createEventType({
@@ -119,6 +120,7 @@ export async function createEventType({
   dateRangeDays,
   beforeEventMin,
   afterEventMin,
+  scheduleId,
 }: CreateOpts): Promise<void> {
   try {
     const user = await UserModel.findOne({ authId });
@@ -135,7 +137,7 @@ export async function createEventType({
       dateRangeDays,
       beforeEventMin,
       afterEventMin,
-      scheduleId: user.schedules?.[0]._id!,
+      scheduleId,
     };
 
     user.eventTypes.push(eventType);
@@ -163,6 +165,7 @@ export async function updateEventType({
   dateRangeDays,
   beforeEventMin,
   afterEventMin,
+  scheduleId,
 }: UpdateOpts): Promise<void> {
   try {
     const user = await UserModel.findOne({ authId });
@@ -181,6 +184,7 @@ export async function updateEventType({
     eventType.dateRangeDays = dateRangeDays;
     eventType.beforeEventMin = beforeEventMin;
     eventType.afterEventMin = afterEventMin;
+    eventType.scheduleId = scheduleId;
 
     await user.save();
 

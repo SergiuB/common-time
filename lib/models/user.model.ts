@@ -19,7 +19,7 @@ const eventTypeSchema = new mongoose.Schema<EventType>({
   location: { type: String, required: true },
   description: { type: String, required: true },
   scheduleId: {
-    type: mongoose.Types.ObjectId,
+    type: String,
     required: true,
   },
   link: { type: String, required: true },

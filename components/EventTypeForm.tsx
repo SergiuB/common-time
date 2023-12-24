@@ -45,6 +45,10 @@ interface Props {
   beforeEventMin?: number;
   afterEventMin?: number;
   action: Action;
+  schedules: {
+    id: string;
+    name: string;
+  }[];
 }
 
 const EventTypeForm = ({
@@ -60,6 +64,7 @@ const EventTypeForm = ({
   beforeEventMin,
   afterEventMin,
   action,
+  schedules,
 }: Props) => {
   const router = useRouter();
   const { userId } = useAuth();
@@ -74,7 +79,7 @@ const EventTypeForm = ({
       location: location || "",
       description: description || "",
       color: color || 0,
-      scheduleId: scheduleId || "",
+      scheduleId: scheduleId || schedules[0].id,
       link: link || "test",
       dateRangeDays: dateRangeDays || 60,
       beforeEventMin:
@@ -96,6 +101,7 @@ const EventTypeForm = ({
       dateRangeDays: values.dateRangeDays,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
+      scheduleId: values.scheduleId,
     };
     if (action == "update") {
       await updateEventType({
@@ -242,11 +248,38 @@ const EventTypeForm = ({
           control={form.control}
           name="location"
           render={({ field }) => (
-            <FormItem className="col-span-4">
+            <FormItem className="col-span-2">
               <FormLabel className="text-small-semibold">Location</FormLabel>
               <FormControl>
                 <Input type="text" className="form-input " {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="scheduleId"
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel className="text-small-semibold">
+                Availability
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="form-input">
+                    <SelectValue placeholder="Select a schedule" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {schedules.map((schedule) => (
+                    <SelectItem value={schedule.id} key={schedule.id}>
+                      {schedule.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
