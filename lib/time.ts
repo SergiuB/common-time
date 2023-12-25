@@ -155,6 +155,27 @@ export function minutesFromString(str: string) {
   throw new Error(`Invalid string: ${str}`);
 }
 
+export function minutesToString(minutes: number) {
+  switch (minutes) {
+    case 0:
+      return "0 min";
+    case 15:
+      return "15 min";
+    case 30:
+      return "30 min";
+    case 45:
+      return "45 min";
+    case 60:
+      return "1 hr";
+    case 90:
+      return "1 hr 30 min";
+    case 120:
+      return "2 hr";
+  }
+
+  throw new Error(`Invalid number: ${minutes}`);
+}
+
 export const generateTimesInDay = (gapMinutes: number) => {
   const times = [];
   for (let hour = 0; hour < 24; hour++) {

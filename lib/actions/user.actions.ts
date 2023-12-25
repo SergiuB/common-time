@@ -510,6 +510,14 @@ export const getUserDataFromLink = async (link: string) => {
     return {
       profile: user.profile,
       busyIntervals,
+      eventTypes: user.eventTypes.map((eventType) => ({
+        id: eventType._id!.toString(),
+        name: eventType.name,
+        durationMin: eventType.durationMin,
+        color: eventType.color,
+        location: eventType.location,
+        description: eventType.description,
+      })),
     };
   } catch (error: any) {
     throw new Error(`Failed to get user data from link: ${error.message}`);
