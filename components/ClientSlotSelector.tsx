@@ -10,9 +10,7 @@ import {
   getStartOfWeek,
   subtractBusyIntervals,
 } from "@/lib/time";
-
-const EVENT_DURATION_MIN = 60;
-const EVENT_STEP_MIN = 30;
+import { EVENT_STEP_MIN } from "@/constants";
 
 interface EventType {
   id: string;

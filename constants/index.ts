@@ -79,3 +79,5 @@ export const days = [
 
 export const defaultStartMin = 9 * 60;
 export const defaultEndMin = 17 * 60;
+
+export const EVENT_STEP_MIN = 30;
