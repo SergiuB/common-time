@@ -517,6 +517,16 @@ export const getUserDataFromLink = async (link: string) => {
         color: eventType.color,
         location: eventType.location,
         description: eventType.description,
+        scheduleId: eventType.scheduleId,
+      })),
+      schedules: user.schedules.map((schedule) => ({
+        id: schedule._id!.toString(),
+        name: schedule.name,
+        intervals: schedule.intervals.map((interval) => ({
+          day: interval.day,
+          startMin: interval.startMin,
+          endMin: interval.endMin,
+        })),
       })),
     };
   } catch (error: any) {
