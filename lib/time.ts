@@ -1,7 +1,7 @@
 import { addLeadingZero } from "./utils";
 
-// subtracts two time intervals
-export function subtractTimeIntervals(
+// returns intervals which are part of the first interval but not the second
+export function subtractInterval(
   start1: number,
   end1: number,
   start2: number,
@@ -10,7 +10,7 @@ export function subtractTimeIntervals(
   const result: [number, number][] = [];
 
   if (start1 >= end1 || start2 >= end2) {
-    throw new Error("Invalid time interval");
+    throw new Error("Invalid interval");
   }
 
   if (end1 <= start2) {
@@ -46,35 +46,37 @@ export function subtractTimeIntervals(
   return result;
 }
 
-export function subtractBusyIntervals(
+// subtracts multiple intervals from one interval
+export function subtractMultipleIntervals(
   start: number,
   end: number,
-  busyIntervals: {
-    start: number;
-    end: number;
-  }[],
+  intervals: [number, number][],
 ) {
-  const sortedBusyIntervals = busyIntervals.sort((a, b) => a.start - b.start);
+  const sortedIntervals = intervals.sort((a, b) => a[0] - b[0]);
 
-  let freeIntervals: [number, number][] = [[start, end]];
-  const intersectingBusyIntervals = sortedBusyIntervals.filter(
-    ({ start: busyStart, end: busyEnd }) =>
-      intervalsIntersect(start, end, busyStart, busyEnd),
+  let resultingIntervals: [number, number][] = [[start, end]];
+  const intersectingIntervals = sortedIntervals.filter((interval) =>
+    intervalsIntersect(start, end, interval[0], interval[1]),
   );
 
-  for (const { start: busyStart, end: busyEnd } of intersectingBusyIntervals) {
-    const newFreeIntervals: [number, number][] = [];
+  for (const [intersectingStart, intersectingEnd] of intersectingIntervals) {
+    const newResultingIntervals: [number, number][] = [];
 
-    for (const [freeStart, freeEnd] of freeIntervals) {
-      newFreeIntervals.push(
-        ...subtractTimeIntervals(freeStart, freeEnd, busyStart, busyEnd),
+    for (const [resultingStart, resultingEnd] of resultingIntervals) {
+      newResultingIntervals.push(
+        ...subtractInterval(
+          resultingStart,
+          resultingEnd,
+          intersectingStart,
+          intersectingEnd,
+        ),
       );
     }
 
-    freeIntervals = newFreeIntervals;
+    resultingIntervals = newResultingIntervals;
   }
 
-  return freeIntervals;
+  return resultingIntervals;
 }
 
 export function intervalsIntersect(

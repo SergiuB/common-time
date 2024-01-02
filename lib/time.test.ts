@@ -1,58 +1,36 @@
 import {
   intervalsIntersect,
   extractSubintervals,
-  subtractBusyIntervals,
-  subtractTimeIntervals,
+  subtractMultipleIntervals,
+  subtractInterval,
 } from "./time";
 
-describe("subtractBusyIntervals", () => {
-  it("should correctly subtract one middle busy interval", () => {
-    const result = subtractBusyIntervals(1, 10, [
-      {
-        start: 2,
-        end: 5,
-      },
-    ]);
+describe("subtractMultipleIntervals", () => {
+  it("should correctly subtract one middle interval", () => {
+    const result = subtractMultipleIntervals(1, 10, [[2, 5]]);
     expect(result).toEqual([
       [1, 2],
       [5, 10],
     ]);
   });
 
-  it("should correctly subtract one starting busy interval", () => {
-    const result = subtractBusyIntervals(1, 10, [
-      {
-        start: 0,
-        end: 5,
-      },
-    ]);
+  it("should correctly subtract one starting interval", () => {
+    const result = subtractMultipleIntervals(1, 10, [[0, 5]]);
+
     expect(result).toEqual([[5, 10]]);
   });
 
-  it("should correctly subtract one ending busy interval", () => {
-    const result = subtractBusyIntervals(1, 10, [
-      {
-        start: 8,
-        end: 11,
-      },
-    ]);
+  it("should correctly subtract one ending interval", () => {
+    const result = subtractMultipleIntervals(1, 10, [[8, 11]]);
+
     expect(result).toEqual([[1, 8]]);
   });
 
-  it("should correctly subtract multiple busy intervals (A)", () => {
-    const result = subtractBusyIntervals(1, 10, [
-      {
-        start: 2,
-        end: 5,
-      },
-      {
-        start: 6,
-        end: 8,
-      },
-      {
-        start: 10,
-        end: 11,
-      },
+  it("should correctly subtract multiple intervals (A)", () => {
+    const result = subtractMultipleIntervals(1, 10, [
+      [2, 5],
+      [6, 8],
+      [10, 11],
     ]);
     expect(result).toEqual([
       [1, 2],
@@ -61,51 +39,42 @@ describe("subtractBusyIntervals", () => {
     ]);
   });
 
-  it("should correctly subtract multiple busy intervals (B)", () => {
-    const result = subtractBusyIntervals(1, 10, [
-      {
-        start: 1,
-        end: 3,
-      },
-      {
-        start: 3,
-        end: 5,
-      },
-      {
-        start: 9,
-        end: 11,
-      },
+  it("should correctly subtract multiple intervals (B)", () => {
+    const result = subtractMultipleIntervals(1, 10, [
+      [1, 3],
+      [3, 5],
+      [9, 11],
     ]);
     expect(result).toEqual([[5, 9]]);
   });
 });
 
-describe("subtractTimeIntervals", () => {
-  it("should correctly subtract one middle busy interval", () => {
-    const result = subtractTimeIntervals(1, 10, 2, 5);
+describe("subtractInterval", () => {
+  it("should correctly subtract one middle interval", () => {
+    const result = subtractInterval(1, 10, 2, 5);
     expect(result).toEqual([
       [1, 2],
       [5, 10],
     ]);
   });
 
-  it("should correctly subtract one exactly starting busy interval", () => {
-    const result = subtractTimeIntervals(1, 10, 1, 5);
+  it("should correctly subtract one exactly starting interval", () => {
+    const result = subtractInterval(1, 10, 1, 5);
     expect(result).toEqual([[5, 10]]);
   });
 
-  it("should correctly subtract one starting busy interval", () => {
-    const result = subtractTimeIntervals(1, 10, 0, 5);
+  it("should correctly subtract one starting interval", () => {
+    const result = subtractInterval(1, 10, 0, 5);
     expect(result).toEqual([[5, 10]]);
   });
 
-  it("should correctly subtract one exactly ending busy interval", () => {
-    const result = subtractTimeIntervals(1, 10, 8, 10);
+  it("should correctly subtract one exactly ending interval", () => {
+    const result = subtractInterval(1, 10, 8, 10);
     expect(result).toEqual([[1, 8]]);
   });
 
-  it("should correctly subtract one ending busy interval", () => {
-    const result = subtractTimeIntervals(1, 10, 8, 11);
+  it("should correctly subtract one ending interval", () => {
+    const result = subtractInterval(1, 10, 8, 11);
     expect(result).toEqual([[1, 8]]);
   });
 });

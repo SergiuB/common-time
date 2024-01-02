@@ -8,7 +8,7 @@ import {
   extractSubintervals,
   getFutureDays,
   getStartOfWeek,
-  subtractBusyIntervals,
+  subtractMultipleIntervals,
 } from "@/lib/time";
 import { EVENT_STEP_MIN, DAY_NAMES } from "@/constants";
 import { Day } from "@/lib/models/types";
@@ -64,23 +64,11 @@ export const ClientSlotSelector = ({
     ({ id }) => id === selectedEventType.scheduleId,
   )!;
 
-  console.log(
-    "busyIntervals",
-    busyIntervals.map(
-      ({ start, end }) =>
-        new Date(start).toString() + " - " + new Date(end).toString(),
-    ),
-  );
-
-  console.log("schedule.intervals", schedule.intervals);
-
   const calendarData = computeCalendarData(
     busyIntervals,
     selectedEventType.durationMin,
     schedule.intervals,
   );
-
-  console.log("calendarData", calendarData);
 
   const freeDaySlots = calendarData.find(
     ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
@@ -144,15 +132,16 @@ const computeCalendarData = (
     const realStart = isToday ? Date.now() : start;
     const toMinutes = (unixTime: number) => unixTime / 1000 / 60;
 
-    const freeDayIntervals = subtractBusyIntervals(
+    const freeDayIntervals = subtractMultipleIntervals(
       realStart,
       end,
-      busyIntervals,
+      busyIntervals.map(({ start, end }) => [start, end]),
     );
     const day = startDate.toLocaleDateString("en-US", { weekday: "long" });
 
     // slots are in minutes since start of day
     const freeDaySlots: [number, number][] = freeDayIntervals
+      // convert to minutes since start of day
       .map(([slotStart, slotEnd]) => {
         const dayStartMin = toMinutes(start);
         return [
@@ -160,42 +149,34 @@ const computeCalendarData = (
           toMinutes(slotEnd) - dayStartMin,
         ];
       })
+      // filter out slots that are not in schedule
       .reduce(
         (acc, [intervalStartMin, intervalEndMin]) => {
           const dayAvailableIntervals = scheduleIntervals
             .filter(({ day: scheduleDay }) => scheduleDay === day)
-            .map(({ startMin, endMin }) => ({
-              start: startMin,
-              end: endMin,
-            }));
+            .map(({ startMin, endMin }) => [startMin, endMin]) as [
+            number,
+            number,
+          ][];
 
-          const dayBusyIntervals = subtractBusyIntervals(
+          // invert to get busy intervals in day from available intervals
+          const dayBusyIntervals = subtractMultipleIntervals(
             0,
             60 * 24,
             dayAvailableIntervals,
           );
 
-          console.log(
-            "daySchedule",
-            startDate.getDate(),
-            day,
+          const slots = subtractMultipleIntervals(
+            intervalStartMin,
+            intervalEndMin,
             dayBusyIntervals,
-            intervalStartMin,
-            intervalEndMin,
-          );
-          const slots = subtractBusyIntervals(
-            intervalStartMin,
-            intervalEndMin,
-            dayBusyIntervals.map(([start, end]) => ({
-              start,
-              end,
-            })),
           );
 
           return [...acc, ...slots];
         },
         [] as [number, number][],
       )
+      // extract slots of event duration
       .reduce(
         (acc, [intervalStartMin, intervalEndMin]) => {
           const slots = extractSubintervals(
