@@ -67,7 +67,7 @@ export const colorVariants: {
   rose: colors.rose["500"],
 };
 
-export const days = [
+export const DAY_NAMES = [
   "Monday",
   "Tuesday",
   "Wednesday",

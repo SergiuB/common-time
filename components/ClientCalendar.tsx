@@ -1,6 +1,6 @@
 "use client";
 
-import { days } from "@/constants";
+import { DAY_NAMES } from "@/constants";
 import { useEffect, useState } from "react";
 import cn from "classnames";
 import { minutesToTime } from "@/lib/time";
@@ -31,7 +31,7 @@ export const ClientCalendar = ({
 
   return (
     <div className="grid grid-flow-row grid-cols-7 gap-0">
-      {days.map((day) => (
+      {DAY_NAMES.map((day) => (
         <div
           key={day}
           className=" col-span-1 text-small-regular text-neutral-500 justify-center items-center text-center mb-1"
