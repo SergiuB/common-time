@@ -17,6 +17,8 @@ interface EventType {
   id: string;
   name: string;
   durationMin: number;
+  beforeEventMin: number;
+  afterEventMin: number;
   color: number;
 
   description: string;
@@ -67,6 +69,8 @@ export const ClientSlotSelector = ({
   const calendarData = computeCalendarData(
     busyIntervals,
     selectedEventType.durationMin,
+    selectedEventType.beforeEventMin,
+    selectedEventType.afterEventMin,
     schedule.intervals,
   );
 
@@ -104,6 +108,8 @@ export const ClientSlotSelector = ({
 const computeCalendarData = (
   busyIntervals: { start: number; end: number }[],
   eventDurationMin: number,
+  beforeEventMin: number,
+  afterEventMin: number,
   scheduleIntervals: {
     day: Day;
     startMin: number;
@@ -180,8 +186,8 @@ const computeCalendarData = (
       .reduce(
         (acc, [intervalStartMin, intervalEndMin]) => {
           const slots = extractSubintervals(
-            intervalStartMin,
-            intervalEndMin,
+            intervalStartMin + beforeEventMin,
+            intervalEndMin - afterEventMin,
             eventDurationMin,
             EVENT_STEP_MIN,
           );

@@ -514,6 +514,8 @@ export const getUserDataFromLink = async (link: string) => {
         id: eventType._id!.toString(),
         name: eventType.name,
         durationMin: eventType.durationMin,
+        beforeEventMin: eventType.beforeEventMin,
+        afterEventMin: eventType.afterEventMin,
         color: eventType.color,
         location: eventType.location,
         description: eventType.description,

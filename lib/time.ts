@@ -98,16 +98,10 @@ export function extractSubintervals(
 ) {
   const result: [number, number][] = [];
 
-  if (start >= end) {
-    throw new Error("Invalid time interval");
-  }
+  // round start to the nearest multiple of step
+  let currentStart = start % step ? start - (start % step) + step : start;
 
-  if (subIntervalLength <= 0) {
-    throw new Error("Invalid sub interval length");
-  }
-
-  let currentStart = start;
-
+  // find all sub intervals that fit in the interval
   while (currentStart + subIntervalLength <= end) {
     result.push([currentStart, currentStart + subIntervalLength]);
     currentStart += step;
