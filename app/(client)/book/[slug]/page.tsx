@@ -3,9 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { getUserDataFromLink } from "@/lib/actions/user.actions";
 import React from "react";
 
-const EVENT_DURATION_MIN = 60;
-const EVENT_STEP_MIN = 30;
-
 interface Props {
   params: {
     slug: string;
@@ -13,7 +10,7 @@ interface Props {
 }
 
 const BookingPage = async ({ params: { slug } }: Props) => {
-  const { profile, eventTypes, busyIntervals } =
+  const { profile, eventTypes, busyIntervals, schedules } =
     await getUserDataFromLink(slug);
   if (!profile) {
     // TOFO: 404 page
@@ -29,6 +26,7 @@ const BookingPage = async ({ params: { slug } }: Props) => {
           busyIntervals={busyIntervals}
           eventTypes={eventTypes}
           defaultEventTypeId={selectedEventTypeId}
+          schedules={schedules}
         />
       </CardContent>
     </Card>
