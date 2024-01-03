@@ -57,10 +57,6 @@ export const ClientSelector = ({
   )!;
 
   const [selectedDay, setSelectedDay] = useState<Date>();
-  const [selectedSlot, setSelectedSlot] = useState<{
-    startMin: number;
-    endMin: number;
-  }>();
 
   const schedule = schedules.find(
     ({ id }) => id === selectedEventType.scheduleId,
@@ -97,7 +93,8 @@ export const ClientSelector = ({
           <h1 className="text-2xl font-semibold mb-4">Select a Time</h1>
           <ClientTimeSelector
             daySlots={freeDaySlots}
-            onSelect={setSelectedSlot}
+            eventType={selectedEventType}
+            selectedDay={selectedDay!}
           />
         </>
       ) : null}
