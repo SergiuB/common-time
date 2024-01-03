@@ -2,7 +2,7 @@
 
 import { ClientCalendar } from "@/components/ClientCalendar";
 import React, { use, useEffect, useState } from "react";
-import { ClientDaySlotSelector } from "./ClientDaySlotSelector";
+import { ClientTimeSelector } from "./ClientTimeSelector";
 import { ClientEventTypeSelector } from "./ClientEventTypeSelector";
 import {
   extractSubintervals,
@@ -43,7 +43,7 @@ interface Props {
   schedules: Schedule[];
 }
 
-export const ClientSlotSelector = ({
+export const ClientSelector = ({
   busyIntervals,
   eventTypes,
   defaultEventTypeId,
@@ -95,7 +95,7 @@ export const ClientSlotSelector = ({
       {freeDaySlots ? (
         <>
           <h1 className="text-2xl font-semibold mb-4">Select a Time</h1>
-          <ClientDaySlotSelector
+          <ClientTimeSelector
             daySlots={freeDaySlots}
             onSelect={setSelectedSlot}
           />

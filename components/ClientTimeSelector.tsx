@@ -12,7 +12,7 @@ interface Props {
   onSelect: SlotSelectFn;
 }
 
-export const ClientDaySlotSelector = ({ daySlots, onSelect }: Props) => {
+export const ClientTimeSelector = ({ daySlots, onSelect }: Props) => {
   return (
     <div className="grid grid-cols-2 gap-4">
       {daySlots.map(([startMin, endMin]) => (
