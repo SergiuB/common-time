@@ -25,6 +25,7 @@ import { BookingValidation } from "@/lib/validations/booking";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { ProfileConsumer } from "./ProfileProvider";
 
 interface EventType {
   id: string;
@@ -37,10 +38,6 @@ interface EventType {
   description: string;
   location: string;
   scheduleId: string;
-}
-
-interface SlotSelectFn {
-  ({ startMin, endMin }: { startMin: number; endMin: number }): void;
 }
 
 interface Props {
@@ -91,80 +88,86 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <div className="cursor-pointer border rounded-md border-neutral-300 h-12 flex justify-center items-center ">
-          {`${minutesToTime(startMin)} - ${minutesToTime(endMin)}`}
-        </div>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{eventType.name}</DialogTitle>
-          <DialogDescription>{eventType.description}</DialogDescription>
-        </DialogHeader>
-        <div className="border-l border-primary-500 border-l-4 rounded-sm p-2 bg-primary-200">
-          <h2 className="text-body-bold mb-1">
-            {selectedDay.toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </h2>
-          <p className="text-base-regular">{`${minutesToTime(
-            startMin,
-          )} - ${minutesToTime(endMin)}`}</p>
-        </div>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col"
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
-                  <FormLabel className="">Name</FormLabel>
-                  <FormControl>
-                    <Input className="col-span-3" {...field} />
-                  </FormControl>
-                  <FormMessage className="text-right col-span-4" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
-                  <FormLabel className="">Email</FormLabel>
-                  <FormControl>
-                    <Input className="col-span-3" {...field} />
-                  </FormControl>
-                  <FormMessage className="text-right col-span-4" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
-                  <FormLabel className="">Phone</FormLabel>
-                  <FormControl>
-                    <Input className="col-span-3" {...field} />
-                  </FormControl>
-                  <FormMessage className="text-right col-span-4" />
-                </FormItem>
-              )}
-            />
-            <Button className="justify-self-end" type="submit">
-              Book
-            </Button>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <ProfileConsumer>
+      {(profile) => (
+        <Dialog>
+          <DialogTrigger asChild>
+            <div className="cursor-pointer border rounded-md border-neutral-300 h-12 flex justify-center items-center ">
+              {`${minutesToTime(startMin)} - ${minutesToTime(endMin)}`}
+            </div>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>
+                {profile.fullName} - {eventType.name}
+              </DialogTitle>
+              <DialogDescription>{eventType.description}</DialogDescription>
+            </DialogHeader>
+            <div className="border-l border-primary-500 border-l-4 rounded-sm p-2 bg-primary-200">
+              <h2 className="text-body-bold mb-1">
+                {selectedDay.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </h2>
+              <p className="text-base-regular">{`${minutesToTime(
+                startMin,
+              )} - ${minutesToTime(endMin)}`}</p>
+            </div>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col"
+              >
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
+                      <FormLabel className="">Name</FormLabel>
+                      <FormControl>
+                        <Input className="col-span-3" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-right col-span-4" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
+                      <FormLabel className="">Email</FormLabel>
+                      <FormControl>
+                        <Input className="col-span-3" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-right col-span-4" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
+                      <FormLabel className="">Phone</FormLabel>
+                      <FormControl>
+                        <Input className="col-span-3" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-right col-span-4" />
+                    </FormItem>
+                  )}
+                />
+                <Button className="justify-self-end" type="submit">
+                  Book
+                </Button>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+      )}
+    </ProfileConsumer>
   );
 };

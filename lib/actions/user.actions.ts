@@ -508,7 +508,11 @@ export const getUserDataFromLink = async (link: string) => {
     const busyIntervals = await getAllBusyIntevals(user);
 
     return {
-      profile: user.profile,
+      profile: {
+        fullName: user.profile.fullName,
+        link: user.profile.link,
+        email: user.profile.email,
+      },
       busyIntervals,
       eventTypes: user.eventTypes.map((eventType) => ({
         id: eventType._id!.toString(),

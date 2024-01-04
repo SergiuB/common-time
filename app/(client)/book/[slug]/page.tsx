@@ -1,4 +1,5 @@
 import { ClientSelector } from "@/components/ClientSelector";
+import { ProfileProvider } from "@/components/ProfileProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserDataFromLink } from "@/lib/actions/user.actions";
 import React from "react";
@@ -22,12 +23,14 @@ const BookingPage = async ({ params: { slug } }: Props) => {
   return (
     <Card>
       <CardContent className="pt-4">
-        <ClientSelector
-          busyIntervals={busyIntervals}
-          eventTypes={eventTypes}
-          defaultEventTypeId={selectedEventTypeId}
-          schedules={schedules}
-        />
+        <ProfileProvider profile={profile}>
+          <ClientSelector
+            busyIntervals={busyIntervals}
+            eventTypes={eventTypes}
+            defaultEventTypeId={selectedEventTypeId}
+            schedules={schedules}
+          />
+        </ProfileProvider>
       </CardContent>
     </Card>
   );
