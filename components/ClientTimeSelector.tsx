@@ -25,7 +25,7 @@ import { BookingValidation } from "@/lib/validations/booking";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { ProfileConsumer } from "./ProfileProvider";
+import { UserDataConsumer } from "./UserDataProvider";
 
 interface EventType {
   id: string;
@@ -88,8 +88,8 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
   };
 
   return (
-    <ProfileConsumer>
-      {(profile) => (
+    <UserDataConsumer>
+      {(userData) => (
         <Dialog>
           <DialogTrigger asChild>
             <div className="cursor-pointer border rounded-md border-neutral-300 h-12 flex justify-center items-center ">
@@ -99,7 +99,7 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
-                {profile.fullName} - {eventType.name}
+                {userData.fullName} - {eventType.name}
               </DialogTitle>
               <DialogDescription>{eventType.description}</DialogDescription>
             </DialogHeader>
@@ -168,6 +168,6 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           </DialogContent>
         </Dialog>
       )}
-    </ProfileConsumer>
+    </UserDataConsumer>
   );
 };
