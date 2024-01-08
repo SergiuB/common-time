@@ -3,6 +3,7 @@
 import { memoize } from "../utils";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { TokenData } from "./types";
+import { REDIRECT_URI } from "@/constants";
 
 export const getTokensUsingAuthCode = memoize(
   async (authCode: string): Promise<TokenData> => {
@@ -15,7 +16,7 @@ export const getTokensUsingAuthCode = memoize(
       body: new URLSearchParams({
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
+        redirect_uri: REDIRECT_URI,
         code: authCode,
         grant_type: "authorization_code",
       }),
@@ -52,7 +53,7 @@ export const getTokensUsingRefreshToken = async (
     body: new URLSearchParams({
       client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
       client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-      redirect_uri: process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI!,
+      redirect_uri: REDIRECT_URI,
       refresh_token: refreshToken,
       grant_type: "refresh_token",
     }),

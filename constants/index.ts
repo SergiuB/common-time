@@ -81,3 +81,16 @@ export const defaultStartMin = 9 * 60;
 export const defaultEndMin = 17 * 60;
 
 export const EVENT_STEP_MIN = 30;
+
+export const REDIRECT_URI = `${
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "development" ? "http" : "https"
+}://${process.env.NEXT_PUBLIC_VERCEL_URL}/calendars/auth`;
+
+export const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+
+export const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+export const SCOPES = "email https://www.googleapis.com/auth/calendar";
+
+export const GOOGLE_OAUTH_FULL_URL = `${GOOGLE_OAUTH_URL}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+  REDIRECT_URI!,
+)}&scope=${encodeURIComponent(SCOPES)}&access_type=offline&prompt=consent`;

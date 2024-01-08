@@ -2,13 +2,7 @@
 
 import { Plus, Trash } from "lucide-react";
 import Link from "next/link";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -18,16 +12,7 @@ import {
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { removeCalendarAccount } from "@/lib/actions/user.actions";
-import { CalendarData } from "@/lib/types";
-
-const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
-const REDIRECT_URI = process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URI; // e.g., 'http://localhost:3000/api/auth/callback'
-const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-const SCOPES = "email https://www.googleapis.com/auth/calendar";
-
-const GOOGLE_OAUTH_FULL_URL = `${GOOGLE_OAUTH_URL}?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
-  REDIRECT_URI!,
-)}&scope=${encodeURIComponent(SCOPES)}&access_type=offline&prompt=consent`;
+import { GOOGLE_OAUTH_FULL_URL } from "@/constants";
 
 interface CalendarAccountsCardProps {
   accountData: {
