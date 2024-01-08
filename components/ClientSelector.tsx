@@ -70,9 +70,12 @@ export const ClientSelector = ({
     schedule.intervals,
   );
 
-  const freeDaySlots = calendarData.find(
-    ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
-  )?.freeDaySlots;
+  const freeDaySlots =
+    calendarData.find(
+      ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
+    )?.freeDaySlots ?? [];
+
+  console.log(freeDaySlots);
 
   return (
     <div className="max-w-md">
@@ -88,7 +91,7 @@ export const ClientSelector = ({
         calendarData={calendarData}
         onDaySelected={setSelectedDay}
       />
-      {freeDaySlots ? (
+      {freeDaySlots.length ? (
         <>
           <h1 className="text-2xl font-semibold mb-4">Select a Time</h1>
           <ClientTimeSelector
@@ -97,7 +100,9 @@ export const ClientSelector = ({
             selectedDay={selectedDay!}
           />
         </>
-      ) : null}
+      ) : (
+        "No Slots Available"
+      )}
     </div>
   );
 };
