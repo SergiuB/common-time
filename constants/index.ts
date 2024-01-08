@@ -84,7 +84,7 @@ export const EVENT_STEP_MIN = 30;
 
 export const REDIRECT_URI = `${
   process.env.NEXT_PUBLIC_VERCEL_ENV === "development" ? "http" : "https"
-}://${process.env.NEXT_PUBLIC_VERCEL_URL}/calendars/auth`;
+}://${process.env.NEXT_PUBLIC_GOOGLE_REDIRECT_URL}/calendars/auth`;
 
 export const GOOGLE_OAUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 
