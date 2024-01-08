@@ -91,8 +91,17 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
         const [calendarAccountEmail, calendarId] =
           userData.calendarIdForAdd.split("::") ?? [];
 
+        const [startHour, startMinute] = minutesToTime(startMin)
+          .split(":")
+          .map(Number);
+        const [endHour, endMinute] = minutesToTime(endMin)
+          .split(":")
+          .map(Number);
+
         createEvent(calendarAccountEmail, calendarId, {
           title: `(${getInitials(userData.fullName)}) ${values.name}`,
+          startDate: new Date(selectedDay.setHours(startHour, startMinute)),
+          endDate: new Date(selectedDay.setHours(endHour, endMinute)),
         });
       }
     };

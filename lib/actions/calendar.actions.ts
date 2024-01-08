@@ -10,6 +10,7 @@ import {
 import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
 import { CalendarData } from "../types";
+import { revalidatePath } from "next/cache";
 
 const tappedFetch = async (...args: Parameters<typeof fetch>) => {
   console.log("fetching", args);
@@ -22,8 +23,12 @@ const postEvent = fetchWithToken(
     calendarId: string,
     {
       title,
+      startDate,
+      endDate,
     }: {
       title: string;
+      startDate: Date;
+      endDate: Date;
     },
   ) =>
     fetch(
@@ -37,15 +42,19 @@ const postEvent = fetchWithToken(
         },
         body: JSON.stringify({
           start: {
-            dateTime: new Date().toISOString(),
+            dateTime: startDate.toISOString(),
           },
           end: {
-            dateTime: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
+            dateTime: endDate.toISOString(),
           },
           summary: title,
         }),
       },
     ),
+  (data: any) => {
+    revalidatePath("/book/[slug]", "page");
+    return data;
+  },
 );
 
 export const createEvent = withCalendarTokens(postEvent);
