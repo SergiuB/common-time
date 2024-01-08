@@ -32,7 +32,7 @@ function LeftSidebar() {
           <div
             className={`flex max-lg:flex-col ${pacifico.className} text-heading3-bold  text-neutral-600`}
           >
-            <p>Good</p>
+            <p>Common</p>
             <p>Time</p>
           </div>
         </Link>

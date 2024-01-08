@@ -11,7 +11,9 @@ function Topbar() {
     <nav className="topbar">
       <Link href="/" className="flex items-center gap-4">
         <Image src="/assets/logo.svg" alt="logo" width={28} height={28} />
-        <p className={`${pacifico.className} text-heading3-bold`}>Good Time</p>
+        <p className={`${pacifico.className} text-heading3-bold`}>
+          Common Time
+        </p>
       </Link>
 
       <UserButton afterSignOutUrl="/sign-in" />
