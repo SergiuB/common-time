@@ -2,7 +2,6 @@ import { ClientSelector } from "@/components/ClientSelector";
 import { UserDataProvider } from "@/components/UserDataProvider";
 import { Card, CardContent } from "@/components/ui/card";
 import { getUserDataFromLink } from "@/lib/actions/user.actions";
-import React from "react";
 
 interface Props {
   params: {

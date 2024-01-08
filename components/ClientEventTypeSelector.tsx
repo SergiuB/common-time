@@ -1,24 +1,8 @@
 "use client";
 
-import React from "react";
 import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@radix-ui/react-popover";
-import {
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "cmdk";
-import { Command } from "lucide-react";
-import { Button } from "./ui/button";
 import { colorVariants, eventColors } from "@/constants";
-import { minutesToString, minutesToTime } from "@/lib/time";
-import { Card, CardContent } from "./ui/card";
+import { minutesToString } from "@/lib/time";
 import { Separator } from "@/components/ui/separator";
 
 interface Props {

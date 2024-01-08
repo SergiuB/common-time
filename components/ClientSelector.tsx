@@ -1,7 +1,7 @@
 "use client";
 
 import { ClientCalendar } from "@/components/ClientCalendar";
-import React, { use, useEffect, useState } from "react";
+import { useState } from "react";
 import { ClientTimeSelector } from "./ClientTimeSelector";
 import { ClientEventTypeSelector } from "./ClientEventTypeSelector";
 import {
@@ -10,7 +10,7 @@ import {
   getStartOfWeek,
   subtractMultipleIntervals,
 } from "@/lib/time";
-import { EVENT_STEP_MIN, DAY_NAMES } from "@/constants";
+import { EVENT_STEP_MIN } from "@/constants";
 import { Day } from "@/lib/models/types";
 
 interface EventType {
@@ -50,7 +50,7 @@ export const ClientSelector = ({
   schedules,
 }: Props) => {
   const [selectedEventTypeId, setSelectedEventTypeId] =
-    React.useState(defaultEventTypeId);
+    useState(defaultEventTypeId);
 
   const selectedEventType = eventTypes.find(
     ({ id }) => id === selectedEventTypeId,

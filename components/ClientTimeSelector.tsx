@@ -1,7 +1,6 @@
 "use client";
 
 import { minutesToTime } from "@/lib/time";
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,6 @@ import { Input } from "./ui/input";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
