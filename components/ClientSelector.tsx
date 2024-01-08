@@ -142,6 +142,22 @@ const computeCalendarData = (
     );
     const day = startDate.toLocaleDateString("en-US", { weekday: "long" });
 
+    // get available intervals for day from schedule
+    const dayAvailableIntervals = scheduleIntervals
+      .filter(({ day: scheduleDay }) => scheduleDay === day)
+      // consider time before and after event
+      .map(({ startMin, endMin }) => [
+        startMin - beforeEventMin,
+        endMin + afterEventMin,
+      ]) as [number, number][];
+
+    // invert to get busy intervals in day from available intervals
+    const dayBusyIntervals = subtractMultipleIntervals(
+      0,
+      60 * 24,
+      dayAvailableIntervals,
+    );
+
     // slots are in minutes since start of day
     const freeDaySlots: [number, number][] = freeDayIntervals
       // convert to minutes since start of day
@@ -155,20 +171,6 @@ const computeCalendarData = (
       // filter out slots that are not in schedule
       .reduce(
         (acc, [intervalStartMin, intervalEndMin]) => {
-          const dayAvailableIntervals = scheduleIntervals
-            .filter(({ day: scheduleDay }) => scheduleDay === day)
-            .map(({ startMin, endMin }) => [startMin, endMin]) as [
-            number,
-            number,
-          ][];
-
-          // invert to get busy intervals in day from available intervals
-          const dayBusyIntervals = subtractMultipleIntervals(
-            0,
-            60 * 24,
-            dayAvailableIntervals,
-          );
-
           const slots = subtractMultipleIntervals(
             intervalStartMin,
             intervalEndMin,
