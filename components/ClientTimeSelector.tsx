@@ -25,7 +25,8 @@ import { BookingValidation } from "@/lib/validations/booking";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { UserDataConsumer } from "./UserDataProvider";
+import { UserData, UserDataConsumer } from "./UserDataProvider";
+import { createEvent } from "@/lib/actions/calendar.actions";
 
 interface EventType {
   id: string;
@@ -83,9 +84,18 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof BookingValidation>) => {
-    console.log(values);
-  };
+  const onSubmit =
+    (userData: UserData) =>
+    async (values: z.infer<typeof BookingValidation>) => {
+      if (userData.calendarIdForAdd) {
+        const [calendarAccountEmail, calendarId] =
+          userData.calendarIdForAdd.split("::") ?? [];
+
+        createEvent(calendarAccountEmail, calendarId, {
+          title: `(${getInitials(userData.fullName)}) ${values.name}`,
+        });
+      }
+    };
 
   return (
     <UserDataConsumer>
@@ -118,7 +128,7 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
             </div>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit(userData))}
                 className="flex flex-col"
               >
                 <FormField
@@ -171,3 +181,8 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
     </UserDataConsumer>
   );
 };
+
+function getInitials(fullName: string) {
+  const [firstName, lastName] = fullName.split(" ");
+  return lastName ? `${firstName[0]}${lastName[0]}` : firstName[0];
+}

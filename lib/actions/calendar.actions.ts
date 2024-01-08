@@ -11,6 +11,45 @@ import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
 import { CalendarData } from "../types";
 
+const tappedFetch = async (...args: Parameters<typeof fetch>) => {
+  console.log("fetching", args);
+  return fetch(...args);
+};
+
+const postEvent = fetchWithToken(
+  (
+    accessToken: string,
+    calendarId: string,
+    {
+      title,
+    }: {
+      title: string;
+    },
+  ) =>
+    fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+      {
+        cache: "no-cache",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          start: {
+            dateTime: new Date().toISOString(),
+          },
+          end: {
+            dateTime: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
+          },
+          summary: title,
+        }),
+      },
+    ),
+);
+
+export const createEvent = withCalendarTokens(postEvent);
+
 // https://developers.google.com/calendar/api/v3/reference/freebusy/query?apix_params=%7B%22resource%22%3A%7B%22timeMin%22%3A%222023-12-17T00%3A00%3A00Z%22%2C%22timeMax%22%3A%222023-12-20T00%3A00%3A00Z%22%2C%22items%22%3A%5B%7B%22id%22%3A%22e317361c59870053e474d7483a7babc03a78895fc46d2499e23e769407aeca23%40group.calendar.google.com%22%7D%5D%7D%7D
 // returns busy intervals for a list of calendars
 const fetchBusyIntervals = fetchWithToken(
@@ -62,7 +101,7 @@ export const getCalendars = withCalendarTokens(fetchCalendarList);
 function fetchWithToken<
   T extends (accessToken: string, ...args: any[]) => Promise<any>,
   P extends (data: any) => any,
->(fetchFn: T, transformFn: P) {
+>(fetchFn: T, transformFn?: P) {
   return async (
     accessToken: string,
     ...args: RestParameters<T>
@@ -78,7 +117,7 @@ function fetchWithToken<
       throw new Error(data.error.message || data.error.status || "Forbidden");
     }
 
-    return transformFn(data);
+    return transformFn ? transformFn(data) : data;
   };
 }
 

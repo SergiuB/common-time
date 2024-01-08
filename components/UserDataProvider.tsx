@@ -2,7 +2,7 @@
 
 import React, { createContext } from "react";
 
-interface UserData {
+export interface UserData {
   fullName: string;
   email: string;
   calendarIdForAdd?: string;
