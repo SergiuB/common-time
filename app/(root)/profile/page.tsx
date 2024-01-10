@@ -12,6 +12,7 @@ const Page = async () => {
         fullName={profile.fullName}
         email={profile.email}
         link={profile.link}
+        imageUrl={profile.imageUrl || user?.imageUrl}
       ></ProfileForm>
     </section>
   );

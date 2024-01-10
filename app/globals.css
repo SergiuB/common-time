@@ -133,15 +133,6 @@
   @apply focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0 !important;
 }
 
-/* Account Profile  */
-.account-form_image-label {
-  @apply flex h-24 w-24 items-center justify-center rounded-full bg-gray-800 !important;
-}
-
-.account-form_image-input {
-  @apply cursor-pointer border-none bg-transparent outline-none file:text-primary-500 !important;
-}
-
 .form-input {
   @apply bg-white no-focus !important;
 }

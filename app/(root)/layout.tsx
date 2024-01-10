@@ -5,6 +5,7 @@ import {
   SignedOut,
 } from "@clerk/nextjs";
 import "../globals.css";
+import "@uploadthing/react/styles.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Topbar from "@/components/Topbar";
@@ -13,6 +14,11 @@ import LeftSidebar from "@/components/LeftSidebar";
 import { redirect } from "next/navigation";
 import { createUserIfNotExists } from "@/lib/actions/user.actions";
 import { Toaster } from "@/components/ui/toaster";
+
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +38,7 @@ const Layout = async ({ children }: React.PropsWithChildren) => {
   return (
     <html lang="en">
       <body className={`${inter.className} text-gray-800`}>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <Topbar />
         <main className="flex flex-row">
           <LeftSidebar />

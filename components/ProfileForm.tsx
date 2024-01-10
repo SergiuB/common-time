@@ -2,13 +2,11 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,25 +15,35 @@ import {
 import { Input } from "@/components/ui/input";
 import { ProfileValidation } from "@/lib/validations/profile";
 import { saveProfile } from "@/lib/actions/user.actions";
+import Image from "next/image";
+import { UploadButton } from "@/lib/uploadthing";
 
 interface ProfileFormProps {
   fullName: string;
   email: string;
   link: string;
+  imageUrl?: string;
 }
 
-export const ProfileForm = ({ fullName, email, link }: ProfileFormProps) => {
+export const ProfileForm = ({
+  fullName,
+  email,
+  link,
+  imageUrl,
+}: ProfileFormProps) => {
   const form = useForm({
     resolver: zodResolver(ProfileValidation),
     defaultValues: {
       fullName: fullName || "",
       email: email || "",
       link: link || "",
+      imageUrl: imageUrl || "",
     },
   });
 
   const onSubmit = async (values: ProfileFormProps) => {
     await saveProfile(values);
+    form.reset(values);
   };
 
   return (
@@ -44,6 +52,35 @@ export const ProfileForm = ({ fullName, email, link }: ProfileFormProps) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-8 max-w-xl"
       >
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Photo</FormLabel>
+              <FormControl>
+                <div className="flex flex-row gap-4">
+                  <Image
+                    src={field.value || "/assets/profile_placeholder.svg"}
+                    alt="profile image"
+                    className={`${
+                      field.value ? "rounded-full" : ""
+                    } object-cover h-24 w-24`}
+                    width={96}
+                    height={96}
+                    priority
+                  />
+                  <UploadButton
+                    endpoint="profileImage"
+                    onClientUploadComplete={(res) => {
+                      field.onChange(res[0].url);
+                    }}
+                  />
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="fullName"

@@ -47,6 +47,7 @@ const userSchema = new mongoose.Schema<User>({
     fullName: { type: String, required: true },
     email: { type: String, required: true },
     link: { type: String, required: true },
+    imageUrl: { type: String },
   },
 });
 

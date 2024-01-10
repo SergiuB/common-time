@@ -57,6 +57,7 @@ export interface User {
     fullName: string;
     email: string;
     link: string;
+    imageUrl?: string;
   };
 }
 
