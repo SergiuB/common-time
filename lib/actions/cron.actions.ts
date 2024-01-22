@@ -20,27 +20,14 @@ async function cycleRefreshTokensForUser(user: UserDocument) {
   >;
 
   Object.entries(allCalendarTokens).forEach(
-    ([calendarAccountEmail, { refreshToken }]) => {
-      console.log(
-        "cycling refresh token for",
-        calendarAccountEmail,
-        "with refresh token",
-        refreshToken,
-      );
-      getTokensUsingRefreshToken(refreshToken).then((newTokens) => {
+    ([calendarAccountEmail, { refreshToken }]) =>
+      getTokensUsingRefreshToken(refreshToken).then((newTokens) =>
         storeUserCalendarTokens(user, {
           calendarAccountEmail,
           accessToken: newTokens.accessToken,
           refreshToken: newTokens.refreshToken,
         }),
-          console.log(
-            "new refresh token for",
-            calendarAccountEmail,
-            "is",
-            newTokens.refreshToken,
-          );
-      });
-    },
+      ),
   );
 }
 
