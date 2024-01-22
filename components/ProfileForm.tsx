@@ -23,6 +23,7 @@ interface ProfileFormProps {
   email: string;
   link: string;
   imageUrl?: string;
+  businessLogoUrl?: string;
 }
 
 export const ProfileForm = ({
@@ -30,6 +31,7 @@ export const ProfileForm = ({
   email,
   link,
   imageUrl,
+  businessLogoUrl,
 }: ProfileFormProps) => {
   const form = useForm({
     resolver: zodResolver(ProfileValidation),
@@ -38,6 +40,7 @@ export const ProfileForm = ({
       email: email || "",
       link: link || "",
       imageUrl: imageUrl || "",
+      businessLogoUrl: businessLogoUrl || "",
     },
   });
 
@@ -72,6 +75,34 @@ export const ProfileForm = ({
                   />
                   <UploadButton
                     endpoint="profileImage"
+                    onClientUploadComplete={(res) => {
+                      field.onChange(res[0].url);
+                    }}
+                  />
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="businessLogoUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Business Logo</FormLabel>
+              <FormControl>
+                <div className="flex flex-row gap-4">
+                  <Image
+                    src={field.value || "/assets/profile_placeholder.svg"}
+                    alt="business logo"
+                    className={` object-contain h-24 w-24`}
+                    width={96}
+                    height={96}
+                    priority
+                  />
+                  <UploadButton
+                    endpoint="businessLogo"
                     onClientUploadComplete={(res) => {
                       field.onChange(res[0].url);
                     }}

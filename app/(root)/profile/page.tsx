@@ -13,6 +13,7 @@ const Page = async () => {
         email={profile.email}
         link={profile.link}
         imageUrl={profile.imageUrl || user?.imageUrl}
+        businessLogoUrl={profile.businessLogoUrl}
       ></ProfileForm>
     </section>
   );

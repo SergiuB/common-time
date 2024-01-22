@@ -58,6 +58,7 @@ export interface User {
     email: string;
     link: string;
     imageUrl?: string;
+    businessLogoUrl?: string;
   };
 }
 

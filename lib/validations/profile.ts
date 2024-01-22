@@ -5,4 +5,5 @@ export const ProfileValidation = z.object({
   link: z.string().min(3).max(50).nonempty(),
   email: z.string().email().nonempty(),
   imageUrl: z.string().url().optional(),
+  businessLogoUrl: z.string().url().optional(),
 });
