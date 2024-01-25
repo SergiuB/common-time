@@ -43,6 +43,7 @@ interface Props {
   color?: number;
   beforeEventMin?: number;
   afterEventMin?: number;
+  badges?: string;
   action: Action;
   schedules: {
     id: string;
@@ -61,6 +62,7 @@ const EventTypeForm = ({
   color,
   beforeEventMin,
   afterEventMin,
+  badges,
   action,
   schedules,
 }: Props) => {
@@ -83,6 +85,7 @@ const EventTypeForm = ({
         beforeEventMin !== undefined ? formatMinutes(beforeEventMin) : "0 min",
       afterEventMin:
         afterEventMin !== undefined ? formatMinutes(afterEventMin) : "0 min",
+      badges: badges || "",
     },
   });
 
@@ -97,6 +100,7 @@ const EventTypeForm = ({
       link: values.link,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
+      badges: values.badges,
       scheduleId: values.scheduleId,
     };
     if (action == "update") {
@@ -265,6 +269,20 @@ const EventTypeForm = ({
               <FormLabel className="text-small-semibold">Description</FormLabel>
               <FormControl>
                 <Textarea rows={5} className="form-input" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="badges"
+          render={({ field }) => (
+            <FormItem className="col-span-4">
+              <FormLabel className="text-small-semibold">Badges</FormLabel>
+              <FormControl>
+                <Input type="text" className="form-input " {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -11,19 +11,22 @@ import {
   subtractMultipleIntervals,
 } from "@/lib/time";
 import { EVENT_STEP_MIN } from "@/constants";
-import { Day } from "@/lib/models/types";
+import { Day, EventType } from "@/lib/models/types";
 
-interface EventType {
+interface ClientEventType
+  extends Pick<
+    EventType,
+    | "name"
+    | "durationMin"
+    | "beforeEventMin"
+    | "afterEventMin"
+    | "color"
+    | "description"
+    | "location"
+    | "scheduleId"
+    | "badges"
+  > {
   id: string;
-  name: string;
-  durationMin: number;
-  beforeEventMin: number;
-  afterEventMin: number;
-  color: number;
-
-  description: string;
-  location: string;
-  scheduleId: string;
 }
 
 interface Schedule {
@@ -38,7 +41,7 @@ interface Schedule {
 
 interface Props {
   busyIntervals: { start: number; end: number }[];
-  eventTypes: EventType[];
+  eventTypes: ClientEventType[];
   defaultEventTypeId: string;
   schedules: Schedule[];
 }

@@ -25,23 +25,27 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { UserData, UserDataConsumer } from "./UserDataProvider";
 import { createEvent } from "@/lib/actions/calendar.actions";
+import { EventType } from "@/lib/models/types";
 
-interface EventType {
+interface ClientEventType
+  extends Pick<
+    EventType,
+    | "name"
+    | "durationMin"
+    | "beforeEventMin"
+    | "afterEventMin"
+    | "color"
+    | "description"
+    | "location"
+    | "scheduleId"
+    | "badges"
+  > {
   id: string;
-  name: string;
-  durationMin: number;
-  beforeEventMin: number;
-  afterEventMin: number;
-  color: number;
-
-  description: string;
-  location: string;
-  scheduleId: string;
 }
 
 interface Props {
   daySlots: [number, number][];
-  eventType: EventType;
+  eventType: ClientEventType;
   selectedDay: Date;
 }
 
@@ -68,7 +72,7 @@ export const ClientTimeSelector = ({
 interface SlotProps {
   startMin: number;
   endMin: number;
-  eventType: EventType;
+  eventType: ClientEventType;
   selectedDay: Date;
 }
 

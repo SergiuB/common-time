@@ -38,6 +38,7 @@ interface Props {
   color: number;
   beforeEventMin: number;
   afterEventMin: number;
+  badges?: string;
 }
 
 const EventTypeCard = ({
@@ -46,6 +47,7 @@ const EventTypeCard = ({
   name,
   durationMin,
   link,
+  badges,
   color,
 }: Props) => {
   const router = useRouter();

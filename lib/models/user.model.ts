@@ -26,6 +26,7 @@ const eventTypeSchema = new mongoose.Schema<EventType>({
   color: { type: Number, required: true },
   beforeEventMin: { type: Number, required: true },
   afterEventMin: { type: Number, required: true },
+  badges: { type: String },
 });
 
 const userSchema = new mongoose.Schema<User>({

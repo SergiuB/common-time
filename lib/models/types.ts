@@ -31,6 +31,7 @@ export interface EventType {
   color: Color;
   beforeEventMin: number;
   afterEventMin: number;
+  badges?: string;
 }
 
 interface EventTypeSubdoc extends EventType {
