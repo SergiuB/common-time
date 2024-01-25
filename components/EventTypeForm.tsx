@@ -29,6 +29,7 @@ import { formatMinutes, minutesFromString } from "@/lib/time";
 import { useAuth } from "@clerk/nextjs";
 import { colorVariants, eventColors } from "@/constants";
 import { createEventType, updateEventType } from "@/lib/actions/user.actions";
+import { EventTypeBadges } from "./EventTypeBadges";
 
 type Action = "create" | "update";
 
@@ -285,9 +286,14 @@ const EventTypeForm = ({
                 <Input type="text" className="form-input " {...field} />
               </FormControl>
               <FormMessage />
+              {field.value.length ? (
+                <EventTypeBadges badgeStr={field.value} />
+              ) : null}
             </FormItem>
           )}
         />
+
+        {}
 
         <FormField
           control={form.control}
@@ -335,29 +341,3 @@ const EventTypeForm = ({
 };
 
 export default EventTypeForm;
-
-{
-  /* <Select
-onValueChange={field.onChange}
-defaultValue={eventColors[field.value]}
-onValueChange={(e) =>
-  field.onChange(parseInt(e.target.value, 10))
-}
->
-<FormControl>
-  <SelectTrigger className="form-input">
-    <SelectValue placeholder="Select a color" />
-  </SelectTrigger>
-</FormControl>
-<SelectContent>
-  {eventColors.map((color) => (
-    <SelectItem value={color} key={color}>
-      <div
-        className="w-4 h-4 rounded-full"
-        style={{ backgroundColor: color }}
-      />
-    </SelectItem>
-  ))}
-</SelectContent>
-</Select> */
-}
