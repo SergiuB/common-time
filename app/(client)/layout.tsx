@@ -17,8 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} text-gray-800`}>
-        <section className="relative  min-h-screen  items-center bg-neutral-100 px-6 pb-10 pt-28 md:pt-10  max-md:pb-32 sm:px-10; ">
-          <div className="w-full max-x-4xl">{children}</div>
+        <section className="flex justify-center relative  min-h-screen  bg-neutral-100 md:p-10">
+          {children}
         </section>
       </body>
     </html>

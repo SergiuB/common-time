@@ -25,7 +25,7 @@ export const ClientEventTypeSelector = ({
   onSelect,
 }: Props) => {
   return (
-    <div className="max-w-md">
+    <div>
       {eventTypes.map(({ id, name, durationMin, description, color }) => {
         const isSelected = id === selectedEventTypeId;
         return (
@@ -67,7 +67,7 @@ export const ClientEventTypeSelector = ({
             {isSelected && description && (
               <>
                 <Separator className="my-2" />
-                {description}
+                <p className="text-small-regular">{description}</p>
               </>
             )}
           </div>

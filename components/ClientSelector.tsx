@@ -78,8 +78,7 @@ export const ClientSelector = ({
   console.log(freeDaySlots);
 
   return (
-    <div className="max-w-md">
-      <h1 className="text-2xl font-semibold mb-4">Select an Event</h1>
+    <div>
       <ClientEventTypeSelector
         eventTypes={eventTypes}
         selectedEventTypeId={selectedEventTypeId}
