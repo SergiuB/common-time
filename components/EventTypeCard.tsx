@@ -36,7 +36,6 @@ interface Props {
   scheduleId: string;
   link: string;
   color: number;
-  dateRangeDays: number;
   beforeEventMin: number;
   afterEventMin: number;
 }

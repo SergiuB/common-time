@@ -31,7 +31,6 @@ const Page = async ({ params }: { params: { id: string } }) => {
         scheduleId={eventType.scheduleId.toString()}
         link={eventType.link}
         color={eventType.color}
-        dateRangeDays={eventType.dateRangeDays}
         beforeEventMin={eventType.beforeEventMin}
         afterEventMin={eventType.afterEventMin}
         schedules={schedules}

@@ -24,14 +24,8 @@ const eventTypeSchema = new mongoose.Schema<EventType>({
   },
   link: { type: String, required: true },
   color: { type: Number, required: true },
-  dateRangeDays: { type: Number, required: true },
   beforeEventMin: { type: Number, required: true },
   afterEventMin: { type: Number, required: true },
-});
-
-const calendarTokenSchema = new mongoose.Schema<CalendarTokens>({
-  accessToken: { type: String, required: true },
-  refreshToken: { type: String, required: true },
 });
 
 const userSchema = new mongoose.Schema<User>({

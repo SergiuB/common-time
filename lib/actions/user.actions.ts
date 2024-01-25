@@ -103,7 +103,6 @@ interface CreateOpts {
   description: string;
   link: string;
   color: Color;
-  dateRangeDays: number;
   beforeEventMin: number;
   afterEventMin: number;
   scheduleId: string;
@@ -117,7 +116,6 @@ export async function createEventType({
   description,
   link,
   color,
-  dateRangeDays,
   beforeEventMin,
   afterEventMin,
   scheduleId,
@@ -134,7 +132,6 @@ export async function createEventType({
       description,
       link,
       color,
-      dateRangeDays,
       beforeEventMin,
       afterEventMin,
       scheduleId,
@@ -162,7 +159,6 @@ export async function updateEventType({
   description,
   link,
   color,
-  dateRangeDays,
   beforeEventMin,
   afterEventMin,
   scheduleId,
@@ -181,7 +177,6 @@ export async function updateEventType({
     eventType.description = description;
     eventType.link = link;
     eventType.color = color;
-    eventType.dateRangeDays = dateRangeDays;
     eventType.beforeEventMin = beforeEventMin;
     eventType.afterEventMin = afterEventMin;
     eventType.scheduleId = scheduleId;
@@ -238,7 +233,6 @@ export async function duplicateEventType({
       description: srcEventType.description,
       link: srcEventType.link,
       color: srcEventType.color,
-      dateRangeDays: srcEventType.dateRangeDays,
       beforeEventMin: srcEventType.beforeEventMin,
       afterEventMin: srcEventType.afterEventMin,
       scheduleId: srcEventType.scheduleId,

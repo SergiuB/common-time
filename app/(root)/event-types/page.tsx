@@ -50,7 +50,6 @@ const Page = async () => {
                 scheduleId,
                 link,
                 color,
-                dateRangeDays,
                 beforeEventMin,
                 afterEventMin,
               }) => (
@@ -65,7 +64,6 @@ const Page = async () => {
                     scheduleId={scheduleId.toString()}
                     link={link}
                     color={color}
-                    dateRangeDays={dateRangeDays}
                     beforeEventMin={beforeEventMin}
                     afterEventMin={afterEventMin}
                   />

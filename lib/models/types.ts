@@ -29,7 +29,6 @@ export interface EventType {
   scheduleId: string;
   link: string;
   color: Color;
-  dateRangeDays: number;
   beforeEventMin: number;
   afterEventMin: number;
 }

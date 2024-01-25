@@ -41,7 +41,6 @@ interface Props {
   scheduleId?: string;
   link?: string;
   color?: number;
-  dateRangeDays?: number;
   beforeEventMin?: number;
   afterEventMin?: number;
   action: Action;
@@ -60,7 +59,6 @@ const EventTypeForm = ({
   scheduleId,
   link,
   color,
-  dateRangeDays,
   beforeEventMin,
   afterEventMin,
   action,
@@ -81,7 +79,6 @@ const EventTypeForm = ({
       color: color || 0,
       scheduleId: scheduleId || schedules[0].id,
       link: link || "test",
-      dateRangeDays: dateRangeDays || 60,
       beforeEventMin:
         beforeEventMin !== undefined ? formatMinutes(beforeEventMin) : "0 min",
       afterEventMin:
@@ -98,7 +95,6 @@ const EventTypeForm = ({
       description: values.description,
       color: values.color,
       link: values.link,
-      dateRangeDays: values.dateRangeDays,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
       scheduleId: values.scheduleId,
@@ -166,33 +162,9 @@ const EventTypeForm = ({
 
         <FormField
           control={form.control}
-          name="dateRangeDays"
-          render={({ field }) => (
-            <FormItem className="col-span-1">
-              <FormLabel className="text-small-semibold">Date Range</FormLabel>
-              <div className="flex items-center gap-2">
-                <FormControl>
-                  <Input
-                    type="number"
-                    className="form-input "
-                    {...field}
-                    onChange={(e) =>
-                      field.onChange(parseInt(e.target.value, 10))
-                    }
-                  />
-                </FormControl>
-                <p className="text-subtle-semibold">days into the future</p>
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
           name="beforeEventMin"
           render={({ field }) => (
-            <FormItem className="col-span-1">
+            <FormItem className="col-span-1  col-start-3">
               <FormLabel className="text-small-semibold">
                 Before event
               </FormLabel>
