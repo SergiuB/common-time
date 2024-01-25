@@ -482,7 +482,7 @@ export const getUserCalendarIdsForCheckConflicts = async (
 export const saveProfile = withCurrentUser(
   async (
     user: UserDocument,
-    { fullName, link, email, imageUrl }: User["profile"],
+    { fullName, link, email, imageUrl, businessLogoUrl }: User["profile"],
   ) => {
     try {
       user.profile = {
@@ -490,6 +490,7 @@ export const saveProfile = withCurrentUser(
         link,
         email,
         imageUrl,
+        businessLogoUrl,
       };
 
       await user.save();
@@ -515,6 +516,8 @@ export const getUserDataFromLink = async (link: string) => {
       userData: {
         fullName: user.profile.fullName,
         email: user.profile.email,
+        imageUrl: user.profile.imageUrl,
+        businessLogoUrl: user.profile.businessLogoUrl,
         calendarIdForAdd: user.calendars?.calendarIdForAdd,
       },
       busyIntervals,
