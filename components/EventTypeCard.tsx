@@ -39,6 +39,7 @@ interface Props {
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;
+  timezone: string;
 }
 
 const EventTypeCard = ({

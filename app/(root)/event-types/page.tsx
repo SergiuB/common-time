@@ -52,6 +52,7 @@ const Page = async () => {
                 color,
                 beforeEventMin,
                 afterEventMin,
+                timezone,
               }) => (
                 <div key={_id!.toString()}>
                   <EventTypeCard
@@ -66,6 +67,7 @@ const Page = async () => {
                     color={color}
                     beforeEventMin={beforeEventMin}
                     afterEventMin={afterEventMin}
+                    timezone={timezone}
                   />
                 </div>
               ),

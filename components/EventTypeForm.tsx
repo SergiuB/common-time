@@ -45,6 +45,7 @@ interface Props {
   beforeEventMin?: number;
   afterEventMin?: number;
   badges?: string;
+  timezone?: string;
   action: Action;
   schedules: {
     id: string;
@@ -64,6 +65,7 @@ const EventTypeForm = ({
   beforeEventMin,
   afterEventMin,
   badges,
+  timezone,
   action,
   schedules,
 }: Props) => {
@@ -87,6 +89,8 @@ const EventTypeForm = ({
       afterEventMin:
         afterEventMin !== undefined ? formatMinutes(afterEventMin) : "0 min",
       badges: badges || "",
+      // tODO: timezone: get default from user profile
+      timezone: timezone || "Europe/Bucharest",
     },
   });
 
@@ -102,6 +106,7 @@ const EventTypeForm = ({
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
       badges: values.badges,
+      timezone: values.timezone,
       scheduleId: values.scheduleId,
     };
     if (action == "update") {
@@ -293,7 +298,33 @@ const EventTypeForm = ({
           )}
         />
 
-        {}
+        <FormField
+          control={form.control}
+          name="timezone"
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel className="text-small-semibold">Time zone</FormLabel>
+              <Select
+                disabled
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger className="form-input">
+                    <SelectValue placeholder="Select a duration" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {/* TODO: timezone - populate list */}
+                  <SelectItem value="Europe/Bucharest">
+                    Eastern European Time
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

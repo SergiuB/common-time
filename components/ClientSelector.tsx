@@ -25,6 +25,7 @@ interface ClientEventType
     | "location"
     | "scheduleId"
     | "badges"
+    | "timezone"
   > {
   id: string;
 }
@@ -77,8 +78,6 @@ export const ClientSelector = ({
     calendarData.find(
       ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
     )?.freeDaySlots ?? [];
-
-  console.log(freeDaySlots);
 
   return (
     <div>

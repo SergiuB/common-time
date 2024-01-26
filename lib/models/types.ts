@@ -32,6 +32,7 @@ export interface EventType {
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;
+  timezone: string;
 }
 
 interface EventTypeSubdoc extends EventType {

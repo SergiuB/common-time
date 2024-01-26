@@ -34,6 +34,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
         beforeEventMin={eventType.beforeEventMin}
         afterEventMin={eventType.afterEventMin}
         badges={eventType.badges}
+        timezone={eventType.timezone}
         schedules={schedules}
       />
     </section>

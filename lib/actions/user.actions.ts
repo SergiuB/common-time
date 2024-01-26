@@ -106,6 +106,7 @@ interface CreateOpts {
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;
+  timezone: string;
   scheduleId: string;
 }
 
@@ -120,6 +121,7 @@ export async function createEventType({
   beforeEventMin,
   afterEventMin,
   badges,
+  timezone,
   scheduleId,
 }: CreateOpts): Promise<void> {
   try {
@@ -138,6 +140,7 @@ export async function createEventType({
       afterEventMin,
       badges,
       scheduleId,
+      timezone,
     };
 
     user.eventTypes.push(eventType);
@@ -165,6 +168,7 @@ export async function updateEventType({
   beforeEventMin,
   afterEventMin,
   badges,
+  timezone,
   scheduleId,
 }: UpdateOpts): Promise<void> {
   try {
@@ -185,6 +189,7 @@ export async function updateEventType({
     eventType.afterEventMin = afterEventMin;
     eventType.badges = badges;
     eventType.scheduleId = scheduleId;
+    eventType.timezone = timezone;
 
     await user.save();
 
@@ -242,6 +247,7 @@ export async function duplicateEventType({
       afterEventMin: srcEventType.afterEventMin,
       scheduleId: srcEventType.scheduleId,
       badges: srcEventType.badges,
+      timezone: srcEventType.timezone,
     });
     await user.save();
 
@@ -532,6 +538,7 @@ export const getUserDataFromLink = async (link: string) => {
         description: eventType.description,
         scheduleId: eventType.scheduleId,
         badges: eventType.badges,
+        timezone: eventType.timezone,
       })),
       schedules: user.schedules.map((schedule) => ({
         id: schedule._id!.toString(),

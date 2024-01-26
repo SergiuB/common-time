@@ -39,6 +39,7 @@ interface ClientEventType
     | "location"
     | "scheduleId"
     | "badges"
+    | "timezone"
   > {
   id: string;
 }

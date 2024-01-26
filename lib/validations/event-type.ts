@@ -11,4 +11,5 @@ export const EventTypeValidation = z.object({
   link: z.string().nonempty(),
   scheduleId: z.string().nonempty(),
   badges: z.string(),
+  timezone: z.string().nonempty(),
 });
