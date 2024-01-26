@@ -206,3 +206,15 @@ export function getFutureDays(day: Date, count: number) {
     end: date.setHours(23, 59, 59, 999),
   }));
 }
+
+export function formatTimeInTimeZone(
+  time: number,
+  timeZone: string,
+  locale = "ro-RO",
+) {
+  return new Intl.DateTimeFormat(locale, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: timeZone,
+  }).format(time);
+}

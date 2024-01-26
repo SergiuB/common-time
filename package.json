@@ -24,6 +24,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@uploadthing/react": "^6.1.0",
+    "@vvo/tzdb": "^6.125.0",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
     "clsx": "^2.0.0",

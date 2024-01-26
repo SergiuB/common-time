@@ -1,17 +1,19 @@
 "use client";
 
 import { ClientCalendar } from "@/components/ClientCalendar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClientTimeSelector } from "./ClientTimeSelector";
 import { ClientEventTypeSelector } from "./ClientEventTypeSelector";
 import {
   extractSubintervals,
+  formatTimeInTimeZone,
   getFutureDays,
   getStartOfWeek,
   subtractMultipleIntervals,
 } from "@/lib/time";
 import { EVENT_STEP_MIN } from "@/constants";
 import { Day, EventType } from "@/lib/models/types";
+import { getTimeZones } from "@vvo/tzdb";
 
 interface ClientEventType
   extends Pick<
@@ -53,6 +55,16 @@ export const ClientSelector = ({
   defaultEventTypeId,
   schedules,
 }: Props) => {
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const [selectedEventTypeId, setSelectedEventTypeId] =
     useState(defaultEventTypeId);
 
@@ -79,6 +91,15 @@ export const ClientSelector = ({
       ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
     )?.freeDaySlots ?? [];
 
+  const formattedTimezone =
+    getTimeZones().find((tz) => tz.name === selectedEventType.timezone)
+      ?.alternativeName ?? selectedEventType.timezone;
+
+  const formattedCurrentTime = formatTimeInTimeZone(
+    currentTime,
+    selectedEventType.timezone,
+  );
+
   return (
     <div>
       <ClientEventTypeSelector
@@ -94,7 +115,13 @@ export const ClientSelector = ({
       />
       {freeDaySlots.length ? (
         <>
-          <h1 className="text-2xl font-semibold mb-4">Select a Time</h1>
+          <h1 className="text-2xl font-semibold mb-4">
+            Select a Time{" "}
+            <span className="text-small-regular ml-2">
+              ({formattedTimezone}, now is {formattedCurrentTime}){" "}
+            </span>
+          </h1>
+
           <ClientTimeSelector
             daySlots={freeDaySlots}
             eventType={selectedEventType}
