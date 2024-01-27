@@ -1,5 +1,6 @@
 "use client";
 
+import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +31,7 @@ import { useAuth } from "@clerk/nextjs";
 import { colorVariants, eventColors } from "@/constants";
 import { createEventType, updateEventType } from "@/lib/actions/user.actions";
 import { EventTypeBadges } from "./EventTypeBadges";
+import { DescriptionMarkdown } from "./DescriptionMarkdown";
 
 type Action = "create" | "update";
 
@@ -122,6 +124,8 @@ const EventTypeForm = ({
     }
     router.push("/event-types");
   };
+
+  const d = form.watch("description");
 
   // absolute top-0 left-0 right-0 flex items-center bg-white p-4 border-b
   return (
@@ -271,8 +275,18 @@ const EventTypeForm = ({
           control={form.control}
           name="description"
           render={({ field }) => (
-            <FormItem className="col-span-4">
-              <FormLabel className="text-small-semibold">Description</FormLabel>
+            <FormItem className="col-span-2">
+              <FormLabel className="text-small-semibold">
+                Description (use{" "}
+                <a
+                  className="hover:underline underline-offset-2  text-primary-500"
+                  href="https://www.markdownguide.org/cheat-sheet/"
+                  target="_blank"
+                >
+                  markdown
+                </a>
+                )
+              </FormLabel>
               <FormControl>
                 <Textarea rows={5} className="form-input" {...field} />
               </FormControl>
@@ -280,6 +294,15 @@ const EventTypeForm = ({
             </FormItem>
           )}
         />
+
+        <div className="col-span-2">
+          <h1 className="text-sm font-medium leading-none  text-small-semibold mb-2">
+            Preview
+          </h1>
+          <DescriptionMarkdown className="p-2">
+            {form.watch("description")}
+          </DescriptionMarkdown>
+        </div>
 
         <FormField
           control={form.control}

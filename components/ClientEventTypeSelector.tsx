@@ -5,6 +5,7 @@ import { colorVariants, eventColors } from "@/constants";
 import { minutesToString } from "@/lib/time";
 import { Separator } from "@/components/ui/separator";
 import { EventTypeBadges } from "./EventTypeBadges";
+import { DescriptionMarkdown } from "./DescriptionMarkdown";
 
 interface Props {
   eventTypes: {
@@ -75,7 +76,7 @@ export const ClientEventTypeSelector = ({
                       <EventTypeBadges badgeStr={badges} />
                     </div>
                   ) : null}
-                  <p className="text-small-regular">{description}</p>
+                  <DescriptionMarkdown>{description}</DescriptionMarkdown>
                 </>
               )}
             </div>
