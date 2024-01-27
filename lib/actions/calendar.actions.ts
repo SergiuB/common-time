@@ -25,14 +25,18 @@ const postEvent = fetchWithToken(
       title,
       startDate,
       endDate,
+      attendeeEmail,
+      attendeeName,
     }: {
       title: string;
       startDate: Date;
       endDate: Date;
+      attendeeEmail: string;
+      attendeeName: string;
     },
   ) =>
     fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?sendUpdates=all`,
       {
         cache: "no-cache",
         method: "POST",
@@ -48,6 +52,13 @@ const postEvent = fetchWithToken(
             dateTime: endDate.toISOString(),
           },
           summary: title,
+          attendees: [
+            {
+              email: attendeeEmail,
+              displayName: attendeeName,
+              comment: "I want a massage",
+            },
+          ],
         }),
       },
     ),

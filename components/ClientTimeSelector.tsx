@@ -26,6 +26,7 @@ import * as z from "zod";
 import { UserData, UserDataConsumer } from "./UserDataProvider";
 import { createEvent } from "@/lib/actions/calendar.actions";
 import { EventType } from "@/lib/models/types";
+import { DescriptionMarkdown } from "./DescriptionMarkdown";
 
 interface ClientEventType
   extends Pick<
@@ -105,6 +106,8 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           title: `(${getInitials(userData.fullName)}) ${values.name}`,
           startDate: new Date(selectedDay.setHours(startHour, startMinute)),
           endDate: new Date(selectedDay.setHours(endHour, endMinute)),
+          attendeeName: values.name,
+          attendeeEmail: values.email,
         });
       }
     };
@@ -123,7 +126,11 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
               <DialogTitle>
                 {userData.fullName} - {eventType.name}
               </DialogTitle>
-              <DialogDescription>{eventType.description}</DialogDescription>
+              <DialogDescription>
+                <DescriptionMarkdown>
+                  {eventType.description}
+                </DescriptionMarkdown>
+              </DialogDescription>
             </DialogHeader>
             <div className="border-l border-primary-500 border-l-4 rounded-sm p-2 bg-primary-200">
               <h2 className="text-body-bold mb-1">
