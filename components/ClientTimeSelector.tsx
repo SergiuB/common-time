@@ -27,6 +27,7 @@ import { UserData, UserDataConsumer } from "./UserDataProvider";
 import { createEvent } from "@/lib/actions/calendar.actions";
 import { EventType } from "@/lib/models/types";
 import { DescriptionMarkdown } from "./DescriptionMarkdown";
+import { Textarea } from "./ui/textarea";
 
 interface ClientEventType
   extends Pick<
@@ -85,6 +86,7 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
       name: "",
       email: "",
       phone: "",
+      comment: "",
     },
   });
 
@@ -108,6 +110,7 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           endDate: new Date(selectedDay.setHours(endHour, endMinute)),
           attendeeName: values.name,
           attendeeEmail: values.email,
+          attendeeComment: values.comment,
         });
       }
     };
@@ -184,6 +187,19 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
                       <FormLabel className="">Phone</FormLabel>
                       <FormControl>
                         <Input className="col-span-3" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-right col-span-4" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="comment"
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-4 items-center gap-4 mb-4">
+                      <FormLabel className="">Comments</FormLabel>
+                      <FormControl>
+                        <Textarea rows={5} className="col-span-3" {...field} />
                       </FormControl>
                       <FormMessage className="text-right col-span-4" />
                     </FormItem>

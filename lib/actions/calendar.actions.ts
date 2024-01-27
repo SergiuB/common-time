@@ -27,12 +27,14 @@ const postEvent = fetchWithToken(
       endDate,
       attendeeEmail,
       attendeeName,
+      attendeeComment,
     }: {
       title: string;
       startDate: Date;
       endDate: Date;
       attendeeEmail: string;
       attendeeName: string;
+      attendeeComment: string;
     },
   ) =>
     fetch(
@@ -56,7 +58,7 @@ const postEvent = fetchWithToken(
             {
               email: attendeeEmail,
               displayName: attendeeName,
-              comment: "I want a massage",
+              comment: attendeeComment,
             },
           ],
         }),

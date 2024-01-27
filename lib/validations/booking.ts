@@ -4,4 +4,5 @@ export const BookingValidation = z.object({
   name: z.string().max(30).nonempty(),
   email: z.string().email().nonempty(),
   phone: z.string().max(30).nonempty(),
+  comment: z.string().max(1000),
 });
