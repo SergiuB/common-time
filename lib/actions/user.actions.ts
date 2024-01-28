@@ -509,12 +509,6 @@ export const getUserDataFromLink = async (link: string) => {
 
     const busyIntervals = await getAllBusyIntevals(user);
 
-    const calendarIdForAdd = await getUserCalendarIdForAdd(user);
-    const [calendarAccountEmail] = (calendarIdForAdd ?? "").split("::") ?? [];
-    const colorObj = calendarAccountEmail
-      ? await fetchEventColors(calendarAccountEmail)
-      : {};
-
     return {
       userData: {
         fullName: user.profile.fullName,
@@ -546,7 +540,6 @@ export const getUserDataFromLink = async (link: string) => {
           endMin: interval.endMin,
         })),
       })),
-      colors: colorObj,
     };
   } catch (error: any) {
     throw new Error(`Failed to get user data from link: ${error.message}`);

@@ -8,13 +8,6 @@ import { EventTypeBadges } from "@/components/EventTypeBadges";
 import { DescriptionMarkdown } from "@/components/DescriptionMarkdown";
 
 interface Props {
-  colors: Record<
-    string,
-    {
-      background: string;
-      foreground: string;
-    }
-  >;
   eventTypes: {
     id: string;
     name: string;
@@ -31,7 +24,6 @@ interface Props {
 
 export const ClientEventTypeSelector = ({
   eventTypes,
-  colors,
   selectedEventTypeId,
   onSelect,
 }: Props) => {
@@ -40,7 +32,6 @@ export const ClientEventTypeSelector = ({
       {eventTypes.map(
         ({ id, name, durationMin, description, badges, colorId }) => {
           const isSelected = id === selectedEventTypeId;
-          const color = colors[colorId!]?.background;
           return (
             <div
               key={id}
@@ -54,18 +45,9 @@ export const ClientEventTypeSelector = ({
             >
               <div className="flex justify-between items-center">
                 <div
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: color,
-                          backgroundColor: color,
-                        }
-                      : {
-                          borderColor: color,
-                          backgroundColor: "transparent",
-                        }
-                  }
-                  className={`w-4 h-4 rounded-full border bg-primary-500 border-primary-500`}
+                  className={`w-4 h-4 rounded-full border  border-primary-500 ${
+                    isSelected ? "bg-primary-500" : ""
+                  }`}
                 />
                 <div
                   className={cn(

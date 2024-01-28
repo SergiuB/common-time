@@ -1,13 +1,9 @@
 import { currentUser } from "@clerk/nextjs";
 
 import EventTypeForm from "../components/EventTypeForm";
-import {
-  fetchEventType,
-  fetchSchedules,
-  getCalendarIdForAdd,
-} from "@/lib/actions/user.actions";
+import { fetchEventType, fetchSchedules } from "@/lib/actions/user.actions";
 import { EventTypeTopBar } from "../components/EventTypeTopBar";
-import { fetchEventColors } from "@/lib/actions/calendar.actions";
+import { getColors } from "../lib/colors";
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const user = await currentUser();
@@ -48,18 +44,5 @@ const Page = async ({ params }: { params: { id: string } }) => {
     </section>
   );
 };
-
-async function getColors() {
-  const calendarIdForAdd = await getCalendarIdForAdd();
-  const [calendarAccountEmail] = (calendarIdForAdd ?? "").split("::") ?? [];
-  const colorObj = calendarAccountEmail
-    ? await fetchEventColors(calendarAccountEmail)
-    : {};
-
-  return Object.entries(colorObj).map(([key, value]) => ({
-    id: key,
-    color: value.background,
-  }));
-}
 
 export default Page;

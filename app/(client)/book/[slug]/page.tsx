@@ -10,7 +10,7 @@ interface Props {
 }
 
 const BookingPage = async ({ params: { slug } }: Props) => {
-  const { userData, eventTypes, busyIntervals, schedules, colors } =
+  const { userData, eventTypes, busyIntervals, schedules } =
     await getUserDataFromLink(slug);
   if (!userData) {
     // TOFO: 404 page
@@ -57,7 +57,6 @@ const BookingPage = async ({ params: { slug } }: Props) => {
           eventTypes={eventTypes}
           defaultEventTypeId={selectedEventTypeId}
           schedules={schedules}
-          colors={colors}
         />
       </div>
     </UserDataProvider>
