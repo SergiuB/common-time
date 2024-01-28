@@ -86,6 +86,10 @@ const postEvent = fetchWithToken(
               comment: attendeeComment,
             },
           ],
+          source: {
+            title: "common-time",
+            url: "https://common-time.com",
+          },
         }),
       },
     ),
