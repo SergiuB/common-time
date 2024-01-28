@@ -4,16 +4,23 @@ import { cn } from "@/lib/utils";
 import { colorVariants, eventColors } from "@/constants";
 import { minutesToString } from "@/lib/time";
 import { Separator } from "@/components/ui/separator";
-import { EventTypeBadges } from "./EventTypeBadges";
-import { DescriptionMarkdown } from "./DescriptionMarkdown";
+import { EventTypeBadges } from "@/components/EventTypeBadges";
+import { DescriptionMarkdown } from "@/components/DescriptionMarkdown";
 
 interface Props {
+  colors: Record<
+    string,
+    {
+      background: string;
+      foreground: string;
+    }
+  >;
   eventTypes: {
     id: string;
     name: string;
     durationMin: number;
     description: string;
-    color: number;
+    colorId?: string;
     badges?: string;
   }[];
 
@@ -24,14 +31,16 @@ interface Props {
 
 export const ClientEventTypeSelector = ({
   eventTypes,
+  colors,
   selectedEventTypeId,
   onSelect,
 }: Props) => {
   return (
     <div>
       {eventTypes.map(
-        ({ id, name, durationMin, description, badges, color }) => {
+        ({ id, name, durationMin, description, badges, colorId }) => {
           const isSelected = id === selectedEventTypeId;
+          const color = colors[colorId!]?.background;
           return (
             <div
               key={id}
@@ -48,14 +57,15 @@ export const ClientEventTypeSelector = ({
                   style={
                     isSelected
                       ? {
-                          borderColor: colorVariants[eventColors[color]],
-                          backgroundColor: colorVariants[eventColors[color]],
+                          borderColor: color,
+                          backgroundColor: color,
                         }
                       : {
-                          borderColor: colorVariants[eventColors[color]],
+                          borderColor: color,
+                          backgroundColor: "transparent",
                         }
                   }
-                  className={`w-4 h-4 rounded-full border `}
+                  className={`w-4 h-4 rounded-full border bg-primary-500 border-primary-500`}
                 />
                 <div
                   className={cn(

@@ -1,4 +1,7 @@
-import { ScheduleForm, ScheduleData } from "@/components/ScheduleForm";
+import {
+  ScheduleForm,
+  ScheduleData,
+} from "@/app/(root)/availability/components/ScheduleForm";
 import { fetchSchedules } from "@/lib/actions/user.actions";
 import { Schedule } from "@/lib/models/types";
 import { currentUser } from "@clerk/nextjs";

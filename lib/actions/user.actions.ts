@@ -1,13 +1,6 @@
 "use server";
 
-import {
-  Color,
-  Day,
-  EventType,
-  Interval,
-  Schedule,
-  User,
-} from "../models/types";
+import { Day, EventType, Schedule, User } from "../models/types";
 import UserModel from "../models/user.model";
 import { connectToDb } from "../mongoose";
 import { revalidatePath } from "next/cache";
@@ -15,7 +8,11 @@ import { RestParameters, memoize } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
 import { defaultEndMin, defaultStartMin } from "@/constants";
-import { getBusyIntervals, getUserBusyIntervals } from "./calendar.actions";
+import {
+  fetchEventColors,
+  getBusyIntervals,
+  getUserBusyIntervals,
+} from "./calendar.actions";
 import { TokenData } from "./types";
 
 export type UserDocument = Document<unknown, {}, User> &
@@ -102,7 +99,7 @@ interface CreateOpts {
   location: string;
   description: string;
   link: string;
-  color: Color;
+  colorId: string;
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;
@@ -117,7 +114,7 @@ export async function createEventType({
   location,
   description,
   link,
-  color,
+  colorId,
   beforeEventMin,
   afterEventMin,
   badges,
@@ -135,7 +132,7 @@ export async function createEventType({
       location,
       description,
       link,
-      color,
+      colorId,
       beforeEventMin,
       afterEventMin,
       badges,
@@ -164,7 +161,7 @@ export async function updateEventType({
   location,
   description,
   link,
-  color,
+  colorId,
   beforeEventMin,
   afterEventMin,
   badges,
@@ -184,7 +181,7 @@ export async function updateEventType({
     eventType.location = location;
     eventType.description = description;
     eventType.link = link;
-    eventType.color = color;
+    eventType.colorId = colorId;
     eventType.beforeEventMin = beforeEventMin;
     eventType.afterEventMin = afterEventMin;
     eventType.badges = badges;
@@ -242,7 +239,7 @@ export async function duplicateEventType({
       location: srcEventType.location,
       description: srcEventType.description,
       link: srcEventType.link,
-      color: srcEventType.color,
+      colorId: srcEventType.colorId,
       beforeEventMin: srcEventType.beforeEventMin,
       afterEventMin: srcEventType.afterEventMin,
       scheduleId: srcEventType.scheduleId,
@@ -427,15 +424,15 @@ export const getAllCalendarAccountEmails = withCurrentUser(
   },
 );
 
-export const getCalendarIdForAdd = withCurrentUser(
-  async (user: UserDocument) => {
-    try {
-      return user.calendars?.calendarIdForAdd;
-    } catch (error: any) {
-      throw new Error(`Error getting selected calendar id: ${error.message}`);
-    }
-  },
-);
+export const getUserCalendarIdForAdd = async (user: UserDocument) => {
+  try {
+    return user.calendars?.calendarIdForAdd;
+  } catch (error: any) {
+    throw new Error(`Error getting selected calendar id: ${error.message}`);
+  }
+};
+
+export const getCalendarIdForAdd = withCurrentUser(getUserCalendarIdForAdd);
 
 export const setCalendarIdForAdd = withCurrentUser(
   async (user: UserDocument, calendarId: string) => {
@@ -465,16 +462,6 @@ export const setCalendarIdForCheckConflicts = withCurrentUser(
   },
 );
 
-export const getCalendarIdsForCheckConflicts = withCurrentUser(
-  async (user: UserDocument) => {
-    try {
-      return user.calendars?.calendarIdsForCheckConflicts || [];
-    } catch (error: any) {
-      throw new Error(`Error getting selected calendar ids: ${error.message}`);
-    }
-  },
-);
-
 export const getUserCalendarIdsForCheckConflicts = async (
   user: UserDocument,
 ) => {
@@ -484,6 +471,10 @@ export const getUserCalendarIdsForCheckConflicts = async (
     throw new Error(`Error getting selected calendar ids: ${error.message}`);
   }
 };
+
+export const getCalendarIdsForCheckConflicts = withCurrentUser(
+  getUserCalendarIdsForCheckConflicts,
+);
 
 export const saveProfile = withCurrentUser(
   async (
@@ -518,6 +509,12 @@ export const getUserDataFromLink = async (link: string) => {
 
     const busyIntervals = await getAllBusyIntevals(user);
 
+    const calendarIdForAdd = await getUserCalendarIdForAdd(user);
+    const [calendarAccountEmail] = (calendarIdForAdd ?? "").split("::") ?? [];
+    const colorObj = calendarAccountEmail
+      ? await fetchEventColors(calendarAccountEmail)
+      : {};
+
     return {
       userData: {
         fullName: user.profile.fullName,
@@ -533,7 +530,7 @@ export const getUserDataFromLink = async (link: string) => {
         durationMin: eventType.durationMin,
         beforeEventMin: eventType.beforeEventMin,
         afterEventMin: eventType.afterEventMin,
-        color: eventType.color,
+        colorId: eventType.colorId,
         location: eventType.location,
         description: eventType.description,
         scheduleId: eventType.scheduleId,
@@ -549,6 +546,7 @@ export const getUserDataFromLink = async (link: string) => {
           endMin: interval.endMin,
         })),
       })),
+      colors: colorObj,
     };
   } catch (error: any) {
     throw new Error(`Failed to get user data from link: ${error.message}`);

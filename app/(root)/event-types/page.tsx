@@ -1,4 +1,4 @@
-import EventTypeCard from "@/components/EventTypeCard";
+import EventTypeCard from "@/app/(root)/event-types/components/EventTypeCard";
 import { Button } from "@/components/ui/button";
 import {
   TooltipProvider,
@@ -6,7 +6,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchEventColors } from "@/lib/actions/calendar.actions";
+import { fetchUser, getCalendarIdForAdd } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -33,6 +34,7 @@ const CreateButton = ({ className }: { className: string }) => {
 const Page = async () => {
   const user = await currentUser();
   const userInfo = await fetchUser(user!.id);
+  const colorObj = await getColors();
 
   return (
     <section>
@@ -49,7 +51,7 @@ const Page = async () => {
                 description,
                 scheduleId,
                 link,
-                color,
+                colorId,
                 beforeEventMin,
                 afterEventMin,
                 timezone,
@@ -64,7 +66,7 @@ const Page = async () => {
                     description={description}
                     scheduleId={scheduleId.toString()}
                     link={link}
-                    color={color}
+                    color={colorObj[colorId!]?.background}
                     beforeEventMin={beforeEventMin}
                     afterEventMin={afterEventMin}
                     timezone={timezone}
@@ -88,5 +90,13 @@ const Page = async () => {
     </section>
   );
 };
+
+async function getColors() {
+  const calendarIdForAdd = await getCalendarIdForAdd();
+  const [calendarAccountEmail] = (calendarIdForAdd ?? "").split("::") ?? [];
+  return calendarAccountEmail
+    ? await fetchEventColors(calendarAccountEmail)
+    : {};
+}
 
 export default Page;

@@ -4,12 +4,12 @@ import {
   getCalendarIdsForCheckConflicts,
 } from "@/lib/actions/user.actions";
 import { getCalendars } from "@/lib/actions/calendar.actions";
-import { CalendarAccountsCard } from "@/components/CalendarAccountsCard";
-import { AddToCalendarCard } from "@/components/AddToCalendarCard";
-import { CheckForConflictsCard } from "@/components/CheckForConflictsCard";
 import { CalendarData } from "@/lib/types";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, HeartHandshake } from "lucide-react";
+import { CalendarAccountsCard } from "@/app/(root)/calendars/components/CalendarAccountsCard";
+import { AddToCalendarCard } from "@/app/(root)/calendars/components/AddToCalendarCard";
+import { CheckForConflictsCard } from "@/app/(root)/calendars/components/CheckForConflictsCard";
 
 const FailedAuthAlert = (
   <Alert variant="destructive">

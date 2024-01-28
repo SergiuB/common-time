@@ -12,7 +12,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { Input } from "@/components/ui/input";
 
-import { Label } from "@/components/ui/label";
 import { createSchedule, updateSchedule } from "@/lib/actions/user.actions";
 import { Plus, CalendarCheck, X } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -36,7 +35,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { TimeSelect } from "@/components/TimeSelect";
+import { TimeSelect } from "@/app/(root)/availability/components/TimeSelect";
 import debounce from "lodash/debounce";
 import { useToast } from "@/components/ui/use-toast";
 import { has } from "lodash";

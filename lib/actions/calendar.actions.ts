@@ -17,6 +17,28 @@ const tappedFetch = async (...args: Parameters<typeof fetch>) => {
   return fetch(...args);
 };
 
+const getEventColors = fetchWithToken(
+  (accessToken: string) =>
+    fetch("https://www.googleapis.com/calendar/v3/colors", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }),
+  (data: {
+    event: Record<
+      string,
+      {
+        background: string;
+        foreground: string;
+      }
+    >;
+  }) => data.event,
+);
+
+export const fetchEventColors = withCalendarTokens(getEventColors);
+
 const postEvent = fetchWithToken(
   (
     accessToken: string,
@@ -25,6 +47,7 @@ const postEvent = fetchWithToken(
       title,
       startDate,
       endDate,
+      colorId,
       attendeeEmail,
       attendeeName,
       attendeeComment,
@@ -32,6 +55,7 @@ const postEvent = fetchWithToken(
       title: string;
       startDate: Date;
       endDate: Date;
+      colorId?: string;
       attendeeEmail: string;
       attendeeName: string;
       attendeeComment: string;
@@ -54,6 +78,7 @@ const postEvent = fetchWithToken(
             dateTime: endDate.toISOString(),
           },
           summary: title,
+          colorId: colorId,
           attendees: [
             {
               email: attendeeEmail,
@@ -143,6 +168,12 @@ function fetchWithToken<
   };
 }
 
+/**
+ * This function wraps a function that requires a calendar access token.
+ * It will automatically refresh the token if it is expired.
+ * Works for the current user.
+ */
+
 function withCalendarTokens<
   T extends (accessToken: string, ...args: any[]) => Promise<any>,
 >(fn: T) {
@@ -173,6 +204,11 @@ function withCalendarTokens<
   };
 }
 
+/**
+ * This function wraps a function that requires a calendar access token.
+ * It will automatically refresh the token if it is expired.
+ * Works for any user.
+ */
 function withUserCalendarTokens<
   T extends (accessToken: string, ...args: any[]) => Promise<any>,
 >(fn: T) {

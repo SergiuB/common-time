@@ -1,5 +1,5 @@
-import { ClientSelector } from "@/components/ClientSelector";
-import { UserDataProvider } from "@/components/UserDataProvider";
+import { ClientSelector } from "@/app/(client)/components/ClientSelector";
+import { UserDataProvider } from "@/app/(client)/components/UserDataProvider";
 import { getUserDataFromLink } from "@/lib/actions/user.actions";
 import Image from "next/image";
 
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const BookingPage = async ({ params: { slug } }: Props) => {
-  const { userData, eventTypes, busyIntervals, schedules } =
+  const { userData, eventTypes, busyIntervals, schedules, colors } =
     await getUserDataFromLink(slug);
   if (!userData) {
     // TOFO: 404 page
@@ -57,6 +57,7 @@ const BookingPage = async ({ params: { slug } }: Props) => {
           eventTypes={eventTypes}
           defaultEventTypeId={selectedEventTypeId}
           schedules={schedules}
+          colors={colors}
         />
       </div>
     </UserDataProvider>

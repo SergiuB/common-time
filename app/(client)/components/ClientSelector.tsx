@@ -1,6 +1,6 @@
 "use client";
 
-import { ClientCalendar } from "@/components/ClientCalendar";
+import { ClientCalendar } from "@/app/(client)/components/ClientCalendar";
 import { useEffect, useState } from "react";
 import { ClientTimeSelector } from "./ClientTimeSelector";
 import { ClientEventTypeSelector } from "./ClientEventTypeSelector";
@@ -22,7 +22,7 @@ interface ClientEventType
     | "durationMin"
     | "beforeEventMin"
     | "afterEventMin"
-    | "color"
+    | "colorId"
     | "description"
     | "location"
     | "scheduleId"
@@ -47,6 +47,13 @@ interface Props {
   eventTypes: ClientEventType[];
   defaultEventTypeId: string;
   schedules: Schedule[];
+  colors: Record<
+    string,
+    {
+      background: string;
+      foreground: string;
+    }
+  >;
 }
 
 export const ClientSelector = ({
@@ -54,6 +61,7 @@ export const ClientSelector = ({
   eventTypes,
   defaultEventTypeId,
   schedules,
+  colors,
 }: Props) => {
   const [currentTime, setCurrentTime] = useState(Date.now());
 
@@ -104,6 +112,7 @@ export const ClientSelector = ({
     <div>
       <ClientEventTypeSelector
         eventTypes={eventTypes}
+        colors={colors}
         selectedEventTypeId={selectedEventTypeId}
         onSelect={setSelectedEventTypeId}
       />

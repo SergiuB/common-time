@@ -1,4 +1,4 @@
-import { ProfileForm } from "@/components/ProfileForm";
+import { ProfileForm } from "@/app/(root)/profile/components/ProfileForm";
 import { fetchUser } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 

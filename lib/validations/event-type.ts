@@ -5,7 +5,7 @@ export const EventTypeValidation = z.object({
   durationMin: z.string().nonempty(),
   location: z.string().max(200).nonempty(),
   description: z.string().max(200).nonempty(),
-  color: z.number().min(0).max(16),
+  colorId: z.string(),
   beforeEventMin: z.string().nonempty(),
   afterEventMin: z.string().nonempty(),
   link: z.string().nonempty(),

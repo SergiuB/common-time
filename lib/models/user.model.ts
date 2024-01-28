@@ -23,7 +23,7 @@ const eventTypeSchema = new mongoose.Schema<EventType>({
     required: true,
   },
   link: { type: String, required: true },
-  color: { type: Number, required: true },
+  colorId: { type: String },
   beforeEventMin: { type: Number, required: true },
   afterEventMin: { type: Number, required: true },
   badges: { type: String },

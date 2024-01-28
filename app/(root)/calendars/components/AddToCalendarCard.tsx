@@ -17,7 +17,11 @@ import { useForm } from "react-hook-form";
 import { CalendarData, getCalendarUniqueId } from "@/lib/types";
 import { setCalendarIdForAdd } from "@/lib/actions/user.actions";
 import { AlertCircle } from "lucide-react";
-import { Alert, AlertTitle, AlertDescription } from "./ui/alert";
+import {
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from "../../../../components/ui/alert";
 
 const NoCalendarToAddTo = (
   <Alert>

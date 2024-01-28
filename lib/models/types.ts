@@ -1,25 +1,5 @@
 import mongoose, { Model } from "mongoose";
 
-export enum Color {
-  Red,
-  Orange,
-  Amber,
-  Yellow,
-  Lime,
-  Green,
-  Emerald,
-  Teal,
-  Cyan,
-  Sky,
-  Blue,
-  Indigo,
-  Violet,
-  Purple,
-  Fuchsia,
-  Pink,
-  Rose,
-}
-
 export interface EventType {
   _id?: mongoose.ObjectId;
   name: string;
@@ -28,7 +8,7 @@ export interface EventType {
   description: string;
   scheduleId: string;
   link: string;
-  color: Color;
+  colorId?: string;
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;

@@ -1,6 +1,5 @@
 "use client";
 
-import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,10 +27,9 @@ import {
 } from "@/components/ui/select";
 import { formatMinutes, minutesFromString } from "@/lib/time";
 import { useAuth } from "@clerk/nextjs";
-import { colorVariants, eventColors } from "@/constants";
 import { createEventType, updateEventType } from "@/lib/actions/user.actions";
-import { EventTypeBadges } from "./EventTypeBadges";
-import { DescriptionMarkdown } from "./DescriptionMarkdown";
+import { EventTypeBadges } from "../../../../components/EventTypeBadges";
+import { DescriptionMarkdown } from "../../../../components/DescriptionMarkdown";
 
 type Action = "create" | "update";
 
@@ -43,7 +41,7 @@ interface Props {
   description?: string;
   scheduleId?: string;
   link?: string;
-  color?: number;
+  colorId?: string;
   beforeEventMin?: number;
   afterEventMin?: number;
   badges?: string;
@@ -52,6 +50,10 @@ interface Props {
   schedules: {
     id: string;
     name: string;
+  }[];
+  colors: {
+    id: string;
+    color: string;
   }[];
 }
 
@@ -63,13 +65,14 @@ const EventTypeForm = ({
   description,
   scheduleId,
   link,
-  color,
+  colorId,
   beforeEventMin,
   afterEventMin,
   badges,
   timezone,
   action,
   schedules,
+  colors,
 }: Props) => {
   const router = useRouter();
   const { userId } = useAuth();
@@ -83,7 +86,7 @@ const EventTypeForm = ({
         durationMin !== undefined ? formatMinutes(durationMin) : "30 min",
       location: location || "",
       description: description || "",
-      color: color || 0,
+      colorId: colorId || "",
       scheduleId: scheduleId || schedules[0].id,
       link: link || "test",
       beforeEventMin:
@@ -103,7 +106,7 @@ const EventTypeForm = ({
       durationMin: minutesFromString(values.durationMin),
       location: values.location,
       description: values.description,
-      color: values.color,
+      colorId: values.colorId,
       link: values.link,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
@@ -125,9 +128,6 @@ const EventTypeForm = ({
     router.push("/event-types");
   };
 
-  const d = form.watch("description");
-
-  // absolute top-0 left-0 right-0 flex items-center bg-white p-4 border-b
   return (
     <Form {...form}>
       <form
@@ -349,39 +349,41 @@ const EventTypeForm = ({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem className="col-span-4">
-              <FormLabel className="text-small-semibold">Color</FormLabel>
-              <div className="flex flex-wrap gap-2 pb-4 hover">
-                {eventColors.map((color, index) => (
-                  <div
-                    className="relative w-9 h-9 rounded-full text-center group cursor-pointer"
-                    key={index}
-                    style={{ backgroundColor: colorVariants[color] }}
-                    onClick={() => field.onChange(index)}
-                  >
-                    {field.value === index && (
-                      <Check className="text-white text-center h-8 w-8 pl-0.5 pt-1" />
-                    )}
-                    {field.value !== index ? (
-                      <p className="relative top-8 text-subtle hidden group-hover:inline">
-                        {color}
-                      </p>
-                    ) : (
-                      <p className="relative text-subtle hidden group-hover:inline">
-                        {color}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {colors.length ? (
+          <FormField
+            control={form.control}
+            name="colorId"
+            render={({ field }) => (
+              <FormItem className="col-span-4">
+                <FormLabel className="text-small-semibold">Color</FormLabel>
+                <div className="flex flex-wrap gap-2 pb-4 hover">
+                  {colors.map(({ id, color }) => (
+                    <div
+                      className="relative w-9 h-9 rounded-full text-center group cursor-pointer"
+                      key={id}
+                      style={{ backgroundColor: color }}
+                      onClick={() => field.onChange(id)}
+                    >
+                      {field.value === id && (
+                        <Check className="text-white text-center h-8 w-8 pl-0.5 pt-1" />
+                      )}
+                      {field.value !== id ? (
+                        <p className="relative top-8 text-subtle hidden group-hover:inline">
+                          {color}
+                        </p>
+                      ) : (
+                        <p className="relative text-subtle hidden group-hover:inline">
+                          {color}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : null}
 
         <div className="col-start-3"></div>
         {form.formState.isDirty && (

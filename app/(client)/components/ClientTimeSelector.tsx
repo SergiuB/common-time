@@ -8,9 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -18,31 +18,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
+} from "@/components/ui/form";
 import { BookingValidation } from "@/lib/validations/booking";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { UserData, UserDataConsumer } from "./UserDataProvider";
+import {
+  UserData,
+  UserDataConsumer,
+} from "@/app/(client)/components/UserDataProvider";
 import { createEvent } from "@/lib/actions/calendar.actions";
 import { EventType } from "@/lib/models/types";
-import { DescriptionMarkdown } from "./DescriptionMarkdown";
-import { Textarea } from "./ui/textarea";
+import { DescriptionMarkdown } from "@/components/DescriptionMarkdown";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ClientEventType
-  extends Pick<
-    EventType,
-    | "name"
-    | "durationMin"
-    | "beforeEventMin"
-    | "afterEventMin"
-    | "color"
-    | "description"
-    | "location"
-    | "scheduleId"
-    | "badges"
-    | "timezone"
-  > {
+  extends Pick<EventType, "name" | "description" | "colorId"> {
   id: string;
 }
 
@@ -108,6 +99,7 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           title: `(${getInitials(userData.fullName)}) ${values.name}`,
           startDate: new Date(selectedDay.setHours(startHour, startMinute)),
           endDate: new Date(selectedDay.setHours(endHour, endMinute)),
+          colorId: eventType.colorId,
           attendeeName: values.name,
           attendeeEmail: values.email,
           attendeeComment: values.comment,

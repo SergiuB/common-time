@@ -17,7 +17,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "./ui/tooltip";
+} from "../../../../components/ui/tooltip";
 import { formatMinutes } from "@/lib/time";
 import { colorVariants, eventColors } from "@/constants";
 import {
@@ -35,22 +35,14 @@ interface Props {
   description: string;
   scheduleId: string;
   link: string;
-  color: number;
+  color?: string;
   beforeEventMin: number;
   afterEventMin: number;
   badges?: string;
   timezone: string;
 }
 
-const EventTypeCard = ({
-  authId,
-  id,
-  name,
-  durationMin,
-  link,
-  badges,
-  color,
-}: Props) => {
+const EventTypeCard = ({ authId, id, name, durationMin, color }: Props) => {
   const router = useRouter();
   const editEventType = () => {
     router.push(`/event-types/${id}`);
@@ -60,10 +52,12 @@ const EventTypeCard = ({
       className=" cursor-pointer transition ease-in-out duration-150 hover:-translate-y-1.5 hover:shadow-lg"
       onClick={editEventType}
     >
-      <div
-        style={{ backgroundColor: colorVariants[eventColors[color]] }}
-        className="w-full h-1 rounded-t-lg"
-      ></div>
+      {color ? (
+        <div
+          style={{ backgroundColor: color }}
+          className="w-full h-1 rounded-t-lg"
+        ></div>
+      ) : null}
       <CardHeader>
         <CardTitle>{name}</CardTitle>
         <CardDescription>{formatMinutes(durationMin)}</CardDescription>
