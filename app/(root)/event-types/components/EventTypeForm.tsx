@@ -44,6 +44,7 @@ interface Props {
   colorId?: string;
   beforeEventMin?: number;
   afterEventMin?: number;
+  minimumNoticeMin?: number;
   badges?: string;
   timezone?: string;
   action: Action;
@@ -68,6 +69,7 @@ const EventTypeForm = ({
   colorId,
   beforeEventMin,
   afterEventMin,
+  minimumNoticeMin,
   badges,
   timezone,
   action,
@@ -93,6 +95,10 @@ const EventTypeForm = ({
         beforeEventMin !== undefined ? formatMinutes(beforeEventMin) : "0 min",
       afterEventMin:
         afterEventMin !== undefined ? formatMinutes(afterEventMin) : "0 min",
+      minimumNoticeMin:
+        minimumNoticeMin !== undefined
+          ? formatMinutes(minimumNoticeMin)
+          : "0 min",
       badges: badges || "",
       // tODO: timezone: get default from user profile
       timezone: timezone || "Europe/Bucharest",
@@ -110,6 +116,7 @@ const EventTypeForm = ({
       link: values.link,
       beforeEventMin: minutesFromString(values.beforeEventMin),
       afterEventMin: minutesFromString(values.afterEventMin),
+      minimumNoticeMin: minutesFromString(values.minimumNoticeMin),
       badges: values.badges,
       timezone: values.timezone,
       scheduleId: values.scheduleId,
@@ -167,6 +174,34 @@ const EventTypeForm = ({
                   <SelectItem value="1 hr">1 hr</SelectItem>
                   <SelectItem value="1 hr 30 min">1 hr 30 min</SelectItem>
                   <SelectItem value="2 hr">2 hr</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="minimumNoticeMin"
+          render={({ field }) => (
+            <FormItem className="col-span-1">
+              <FormLabel className="text-small-semibold">
+                Minumum notice
+              </FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="form-input">
+                    <SelectValue placeholder="Select a duration" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="0 min">0 min</SelectItem>
+                  <SelectItem value="30 min">30 min</SelectItem>
+                  <SelectItem value="1 hr">1 hr</SelectItem>
+                  <SelectItem value="1 hr 30 min">1 hr 30 min</SelectItem>
+                  <SelectItem value="2 hr">2 hr</SelectItem>
+                  <SelectItem value="3 hr">3 hr</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

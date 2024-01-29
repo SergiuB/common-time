@@ -8,6 +8,7 @@ export const EventTypeValidation = z.object({
   colorId: z.string(),
   beforeEventMin: z.string().nonempty(),
   afterEventMin: z.string().nonempty(),
+  minimumNoticeMin: z.string().nonempty(),
   link: z.string().nonempty(),
   scheduleId: z.string().nonempty(),
   badges: z.string(),

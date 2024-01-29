@@ -102,6 +102,7 @@ interface CreateOpts {
   colorId: string;
   beforeEventMin: number;
   afterEventMin: number;
+  minimumNoticeMin: number;
   badges?: string;
   timezone: string;
   scheduleId: string;
@@ -117,6 +118,7 @@ export async function createEventType({
   colorId,
   beforeEventMin,
   afterEventMin,
+  minimumNoticeMin,
   badges,
   timezone,
   scheduleId,
@@ -135,6 +137,7 @@ export async function createEventType({
       colorId,
       beforeEventMin,
       afterEventMin,
+      minimumNoticeMin,
       badges,
       scheduleId,
       timezone,
@@ -164,6 +167,7 @@ export async function updateEventType({
   colorId,
   beforeEventMin,
   afterEventMin,
+  minimumNoticeMin,
   badges,
   timezone,
   scheduleId,
@@ -184,6 +188,7 @@ export async function updateEventType({
     eventType.colorId = colorId;
     eventType.beforeEventMin = beforeEventMin;
     eventType.afterEventMin = afterEventMin;
+    eventType.minimumNoticeMin = minimumNoticeMin;
     eventType.badges = badges;
     eventType.scheduleId = scheduleId;
     eventType.timezone = timezone;
@@ -242,6 +247,7 @@ export async function duplicateEventType({
       colorId: srcEventType.colorId,
       beforeEventMin: srcEventType.beforeEventMin,
       afterEventMin: srcEventType.afterEventMin,
+      minimumNoticeMin: srcEventType.minimumNoticeMin,
       scheduleId: srcEventType.scheduleId,
       badges: srcEventType.badges,
       timezone: srcEventType.timezone,
@@ -524,6 +530,7 @@ export const getUserDataFromLink = async (link: string) => {
         durationMin: eventType.durationMin,
         beforeEventMin: eventType.beforeEventMin,
         afterEventMin: eventType.afterEventMin,
+        minimumNoticeMin: eventType.minimumNoticeMin,
         colorId: eventType.colorId,
         location: eventType.location,
         description: eventType.description,

@@ -11,6 +11,7 @@ export interface EventType {
   colorId?: string;
   beforeEventMin: number;
   afterEventMin: number;
+  minimumNoticeMin: number;
   badges?: string;
   timezone: string;
 }

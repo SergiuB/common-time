@@ -146,6 +146,14 @@ export function minutesFromString(str: string) {
       return 90;
     case "2 hr":
       return 120;
+    case "2 hr 30 min":
+      return 150;
+    case "3 hr":
+      return 180;
+    case "3 hr 30 min":
+      return 210;
+    case "4 hr":
+      return 240;
   }
 
   throw new Error(`Invalid string: ${str}`);

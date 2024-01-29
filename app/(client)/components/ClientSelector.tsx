@@ -14,6 +14,7 @@ import {
 import { EVENT_STEP_MIN } from "@/constants";
 import { Day, EventType } from "@/lib/models/types";
 import { getTimeZones } from "@vvo/tzdb";
+import { TimezoneText } from "./TimezoneText";
 
 interface ClientEventType
   extends Pick<
@@ -22,6 +23,7 @@ interface ClientEventType
     | "durationMin"
     | "beforeEventMin"
     | "afterEventMin"
+    | "minimumNoticeMin"
     | "colorId"
     | "description"
     | "location"
@@ -55,16 +57,6 @@ export const ClientSelector = ({
   defaultEventTypeId,
   schedules,
 }: Props) => {
-  const [currentTime, setCurrentTime] = useState(Date.now());
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const [selectedEventTypeId, setSelectedEventTypeId] =
     useState(defaultEventTypeId);
 
@@ -83,6 +75,7 @@ export const ClientSelector = ({
     selectedEventType.durationMin,
     selectedEventType.beforeEventMin,
     selectedEventType.afterEventMin,
+    selectedEventType.minimumNoticeMin,
     schedule.intervals,
   );
 
@@ -90,15 +83,6 @@ export const ClientSelector = ({
     calendarData.find(
       ({ startDate }) => startDate.getDate() === selectedDay?.getDate(),
     )?.freeDaySlots ?? [];
-
-  const formattedTimezone =
-    getTimeZones().find((tz) => tz.name === selectedEventType.timezone)
-      ?.alternativeName ?? selectedEventType.timezone;
-
-  const formattedCurrentTime = formatTimeInTimeZone(
-    currentTime,
-    selectedEventType.timezone,
-  );
 
   return (
     <div>
@@ -116,10 +100,7 @@ export const ClientSelector = ({
       {freeDaySlots.length ? (
         <>
           <h1 className="text-2xl font-semibold mb-4">
-            Select a Time{" "}
-            <span className="text-small-regular ml-2">
-              ({formattedTimezone}, now is {formattedCurrentTime}){" "}
-            </span>
+            Select a Time <TimezoneText timezone={selectedEventType.timezone} />
           </h1>
 
           <ClientTimeSelector
@@ -140,6 +121,7 @@ const computeCalendarData = (
   eventDurationMin: number,
   beforeEventMin: number,
   afterEventMin: number,
+  minimumNoticeMin: number,
   scheduleIntervals: {
     day: Day;
     startMin: number;
@@ -165,7 +147,9 @@ const computeCalendarData = (
 
     const isToday = startDate.getDate() === new Date().getDate();
 
-    const realStart = isToday ? Date.now() : start;
+    const realStart = isToday
+      ? Date.now() + (minimumNoticeMin - beforeEventMin) * 60 * 1000
+      : start;
     const toMinutes = (unixTime: number) => unixTime / 1000 / 60;
 
     const freeDayIntervals = subtractMultipleIntervals(
