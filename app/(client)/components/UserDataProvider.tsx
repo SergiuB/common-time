@@ -3,6 +3,7 @@
 import React, { createContext } from "react";
 
 export interface UserData {
+  id: string;
   fullName: string;
   email: string;
   calendarIdForAdd?: string;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const UserDataContext = createContext<UserData>({
+  id: "",
   fullName: "",
   email: "",
 });

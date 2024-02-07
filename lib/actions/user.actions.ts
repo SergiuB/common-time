@@ -79,10 +79,23 @@ function generateValidLink(fullName: string): string {
   return fullName.replace(/ /g, "_").toLowerCase();
 }
 
-export async function fetchUser(authId: string) {
+export async function fetchUserByAuthId(authId: string) {
   try {
     await connectToDb();
     const user = await UserModel.findOne({ authId });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
+  } catch (error: any) {
+    throw new Error(`Failed to fetch user: ${error.message}`);
+  }
+}
+
+export async function fetchUserById(userId: string) {
+  try {
+    await connectToDb();
+    const user = await UserModel.findById(userId);
     if (!user) {
       throw new Error("User not found");
     }
@@ -517,6 +530,7 @@ export const getUserDataFromLink = async (link: string) => {
 
     return {
       userData: {
+        id: user._id.toString(),
         fullName: user.profile.fullName,
         email: user.profile.email,
         imageUrl: user.profile.imageUrl,
@@ -588,7 +602,7 @@ function withCurrentUser<
     if (!clerkUser) {
       throw new Error("User not logged in");
     }
-    const user = await fetchUser(clerkUser.id);
+    const user = await fetchUserByAuthId(clerkUser.id);
     return fn(user, ...args);
   };
 }

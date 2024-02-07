@@ -7,7 +7,10 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { fetchEventColors } from "@/lib/actions/calendar.actions";
-import { fetchUser, getCalendarIdForAdd } from "@/lib/actions/user.actions";
+import {
+  fetchUserByAuthId,
+  getCalendarIdForAdd,
+} from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -33,7 +36,7 @@ const CreateButton = ({ className }: { className: string }) => {
 
 const Page = async () => {
   const user = await currentUser();
-  const userInfo = await fetchUser(user!.id);
+  const userInfo = await fetchUserByAuthId(user!.id);
   const colorObj = await getColors();
 
   return (

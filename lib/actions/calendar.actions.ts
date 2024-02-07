@@ -2,6 +2,7 @@
 
 import {
   UserDocument,
+  fetchUserById,
   getCalendarTokens,
   getUserCalendarTokens,
   storeCalendarTokens,
@@ -99,7 +100,7 @@ const postEvent = fetchWithToken(
   },
 );
 
-export const createEvent = withCalendarTokens(postEvent);
+export const createEvent = withUserCalendarTokens(postEvent);
 
 // https://developers.google.com/calendar/api/v3/reference/freebusy/query?apix_params=%7B%22resource%22%3A%7B%22timeMin%22%3A%222023-12-17T00%3A00%3A00Z%22%2C%22timeMax%22%3A%222023-12-20T00%3A00%3A00Z%22%2C%22items%22%3A%5B%7B%22id%22%3A%22e317361c59870053e474d7483a7babc03a78895fc46d2499e23e769407aeca23%40group.calendar.google.com%22%7D%5D%7D%7D
 // returns busy intervals for a list of calendars
@@ -217,10 +218,14 @@ function withUserCalendarTokens<
   T extends (accessToken: string, ...args: any[]) => Promise<any>,
 >(fn: T) {
   return async (
-    user: UserDocument,
+    userOrUserId: UserDocument | string,
     calendarAccountEmail: string,
     ...args: RestParameters<T>
   ): Promise<Awaited<ReturnType<T>>> => {
+    const user =
+      typeof userOrUserId === "string"
+        ? await fetchUserById(userOrUserId)
+        : userOrUserId;
     const { accessToken, refreshToken } = await getUserCalendarTokens(
       user,
       calendarAccountEmail,

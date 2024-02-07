@@ -1,10 +1,10 @@
 import { ProfileForm } from "@/app/(root)/profile/components/ProfileForm";
-import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchUserByAuthId } from "@/lib/actions/user.actions";
 import { currentUser } from "@clerk/nextjs";
 
 const Page = async () => {
   const user = await currentUser();
-  const { profile } = await fetchUser(user!.id);
+  const { profile } = await fetchUserByAuthId(user!.id);
 
   return (
     <section>
