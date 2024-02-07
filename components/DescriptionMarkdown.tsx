@@ -11,13 +11,7 @@ export const DescriptionMarkdown = ({
       components={{
         a(props) {
           const { node, ...rest } = props;
-          return (
-            <a
-              className="hover:underline underline-offset-2  text-primary-500"
-              target="_blank"
-              {...rest}
-            />
-          );
+          return <a className="regular-link" target="_blank" {...rest} />;
         },
         p(props) {
           const { node, ...rest } = props;

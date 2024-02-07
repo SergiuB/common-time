@@ -63,10 +63,7 @@ const EventTypeCard = ({ authId, id, name, durationMin, color }: Props) => {
         <CardDescription>{formatMinutes(durationMin)}</CardDescription>
       </CardHeader>
       <CardContent>
-        <Link
-          href="/"
-          className="hover:underline underline-offset-2 text-base-regular-light text-primary-500"
-        >
+        <Link href="/" className="regular-link">
           View booking page
         </Link>
       </CardContent>

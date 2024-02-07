@@ -314,7 +314,7 @@ const EventTypeForm = ({
               <FormLabel className="text-small-semibold">
                 Description (use{" "}
                 <a
-                  className="hover:underline underline-offset-2  text-primary-500"
+                  className="regular-link"
                   href="https://www.markdownguide.org/cheat-sheet/"
                   target="_blank"
                 >

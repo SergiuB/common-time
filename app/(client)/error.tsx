@@ -12,10 +12,7 @@ export default function Error() {
       </p>
       <p className="pb-4">
         While we fix this, you might want to head back to{" "}
-        <a
-          className="hover:underline underline-offset-2 text-base-regular-light text-primary-500"
-          href="https://anandamasaj.ro/#contact-us"
-        >
+        <a className="regular-link" href="https://anandamasaj.ro/#contact-us">
           anandamasaj.ro
         </a>{" "}
         and contact us for an appointment using one of our phone numbers
