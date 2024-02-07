@@ -18,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} text-gray-800`}>
         <section className="flex justify-center relative  min-h-screen  bg-neutral-100 md:p-10">
-          {children}
+          <div className=" max-w-md p-4 md:rounded-lg md:border md:border-neutral-200  md:shadow-sm bg-white text-neutral-950 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-50">
+            {children}
+          </div>
         </section>
       </body>
     </html>
