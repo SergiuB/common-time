@@ -149,9 +149,6 @@ const postEvent = fetchWithToken(
       process.env.CANCEL_SECRET_KEY!,
     );
 
-    // TODO: remove this once we get the proper lin
-    console.log(cancelToken);
-
     // update the event with the cancel link
     return fetch(
       `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventData.id}`,
@@ -164,8 +161,7 @@ const postEvent = fetchWithToken(
         },
         body: JSON.stringify({
           ...eventData,
-
-          description: `<p>Booked via Common Time</p><a href="${process.env.COMMON_TIME_HOST}/cancel/${cancelToken}">Cancel ${cancelToken}</a>`,
+          description: `<p>Booked via Common Time</p><a href="${process.env.COMMON_TIME_HOST}/cancel/${cancelToken}">Cancel event</a>`,
         }),
       },
     );
