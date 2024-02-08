@@ -96,13 +96,15 @@ const Slot = ({ startMin, endMin, eventType, selectedDay }: SlotProps) => {
           .map(Number);
 
         createEvent(userData.id, calendarAccountEmail, calendarId, {
-          title: `(${getInitials(userData.fullName)}) ${values.name}`,
+          title: `${userData.fullName} and ${values.name}`,
           startDate: new Date(selectedDay.setHours(startHour, startMinute)),
           endDate: new Date(selectedDay.setHours(endHour, endMinute)),
           colorId: eventType.colorId,
           attendeeName: values.name,
           attendeeEmail: values.email,
           attendeeComment: values.comment,
+          userId: userData.id,
+          calendarAccountEmail,
         });
       }
     };

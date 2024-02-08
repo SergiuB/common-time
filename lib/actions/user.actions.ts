@@ -4,15 +4,11 @@ import { Day, EventType, Schedule, User } from "../models/types";
 import UserModel from "../models/user.model";
 import { connectToDb } from "../mongoose";
 import { revalidatePath } from "next/cache";
-import { RestParameters, memoize } from "../utils";
+import { RestParameters, isValidObjectId } from "../utils";
 import { currentUser } from "@clerk/nextjs";
 import { Schema, Document } from "mongoose";
 import { defaultEndMin, defaultStartMin } from "@/constants";
-import {
-  fetchEventColors,
-  getBusyIntervals,
-  getUserBusyIntervals,
-} from "./calendar.actions";
+import { getUserBusyIntervals } from "./calendar.actions";
 import { TokenData } from "./types";
 
 export type UserDocument = Document<unknown, {}, User> &
@@ -518,10 +514,14 @@ export const saveProfile = withCurrentUser(
   },
 );
 
-export const getUserDataFromLink = async (link: string) => {
+export const getUserDataFromLinkOrId = async (linkOrUserId: string) => {
   try {
     await connectToDb();
-    const user = await UserModel.findOne({ "profile.link": link });
+    const user = isValidObjectId(linkOrUserId)
+      ? await UserModel.findOne({
+          _id: linkOrUserId,
+        })
+      : await UserModel.findOne({ "profile.link": linkOrUserId });
     if (!user) {
       throw new Error("User not found");
     }

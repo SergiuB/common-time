@@ -1,6 +1,6 @@
 import { ClientSelector } from "@/app/(client)/components/ClientSelector";
 import { UserDataProvider } from "@/app/(client)/components/UserDataProvider";
-import { getUserDataFromLink } from "@/lib/actions/user.actions";
+import { getUserDataFromLinkOrId } from "@/lib/actions/user.actions";
 import Image from "next/image";
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 
 const BookingPage = async ({ params: { slug } }: Props) => {
   const { userData, eventTypes, busyIntervals, schedules } =
-    await getUserDataFromLink(slug);
+    await getUserDataFromLinkOrId(slug);
   if (!userData) {
     // TOFO: 404 page
     return <div>Not found</div>;

@@ -32,3 +32,7 @@ export type RestParameters<T extends (...args: any) => any> = T extends (
 ) => any
   ? P
   : never;
+
+export function isValidObjectId(id: string) {
+  return /^[0-9a-fA-F]{24}$/.test(id);
+}

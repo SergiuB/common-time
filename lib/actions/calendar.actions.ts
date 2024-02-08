@@ -10,8 +10,9 @@ import {
 } from "./user.actions";
 import { getTokensUsingRefreshToken } from "./auth.actions";
 import { RestParameters } from "../utils";
-import { CalendarData } from "../types";
+import { CalendarData, CalendarEvent } from "../types";
 import { revalidatePath } from "next/cache";
+import { encryptSafeUrlPart } from "./crypto.actions";
 
 const tappedFetch = async (...args: Parameters<typeof fetch>) => {
   console.log("fetching", args);
@@ -40,8 +41,50 @@ const getEventColors = fetchWithToken(
 
 export const fetchEventColors = withCalendarTokens(getEventColors);
 
+export const cancelEvent = withUserCalendarTokens(
+  fetchWithToken(
+    async (accessToken: string, calendarId: string, event: CalendarEvent) => {
+      return fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${event.id}`,
+        {
+          cache: "no-cache",
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            ...event,
+            description: "<p>Cancelled via cancel link</p>",
+            status: "cancelled",
+          }),
+        },
+      );
+    },
+  ),
+);
+
+const getEvent = fetchWithToken(
+  async (accessToken: string, calendarId: string, eventId: string) => {
+    return fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventId}`,
+      {
+        cache: "no-cache",
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+  },
+  (data: CalendarEvent) => data,
+);
+
+export const getEventData = withUserCalendarTokens(getEvent);
+
 const postEvent = fetchWithToken(
-  (
+  async (
     accessToken: string,
     calendarId: string,
     {
@@ -52,6 +95,8 @@ const postEvent = fetchWithToken(
       attendeeEmail,
       attendeeName,
       attendeeComment,
+      userId,
+      calendarAccountEmail,
     }: {
       title: string;
       startDate: Date;
@@ -60,9 +105,11 @@ const postEvent = fetchWithToken(
       attendeeEmail: string;
       attendeeName: string;
       attendeeComment: string;
+      userId: string;
+      calendarAccountEmail: string;
     },
-  ) =>
-    fetch(
+  ) => {
+    const response = await fetch(
       `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?sendUpdates=all`,
       {
         cache: "no-cache",
@@ -93,7 +140,36 @@ const postEvent = fetchWithToken(
           },
         }),
       },
-    ),
+    );
+
+    const eventData = await response.json();
+    // we need all this info to generate the cancel link
+    const cancelToken = await encryptSafeUrlPart(
+      `${userId}::${calendarAccountEmail}::${calendarId}::${eventData.id}`,
+      process.env.CANCEL_SECRET_KEY!,
+    );
+
+    // TODO: remove this once we get the proper lin
+    console.log(cancelToken);
+
+    // update the event with the cancel link
+    return fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events/${eventData.id}`,
+      {
+        cache: "no-cache",
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          ...eventData,
+
+          description: `<p>Booked via Common Time</p><a href="${process.env.COMMON_TIME_HOST}/cancel/${cancelToken}">Cancel ${cancelToken}</a>`,
+        }),
+      },
+    );
+  },
   (data: any) => {
     revalidatePath("/book/[slug]", "page");
     return data;
@@ -160,7 +236,14 @@ function fetchWithToken<
   ): Promise<ReturnType<P>> => {
     const response = await fetchFn(accessToken, ...args);
 
-    const data = await response.json();
+    let data;
+
+    try {
+      data = await response.json();
+    } catch (error) {
+      console.error("Error parsing response", error);
+      throw new Error("Error parsing response");
+    }
 
     if (data.error && data.error.code === 401) {
       throw new Error("UNAUTHENTICATED");

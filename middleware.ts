@@ -6,6 +6,7 @@ export default authMiddleware({
     "/api/uploadthing",
     "/api/cron",
     "/book(.*)",
+    "/cancel(.*)",
   ],
   ignoredRoutes: ["/api/webhook/clerk"],
 });
