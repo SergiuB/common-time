@@ -143,11 +143,6 @@ const postEvent = fetchWithToken(
     );
 
     const eventData = await response.json();
-
-    console.error(
-      `${userId}::${calendarAccountEmail}::${calendarId}::${eventData.id}`,
-      process.env.CANCEL_SECRET_KEY!,
-    );
     // we need all this info to generate the cancel link
     const cancelToken = await encryptSafeUrlPart(
       `${userId}::${calendarAccountEmail}::${calendarId}::${eventData.id}`,
